@@ -19,11 +19,6 @@ export default defineConfig({
         changeOrigin: true,
       }
     }    
-  }
-
-  // https://github.com/hannoeru/vite-plugin-pages
-  Pages({
-
-  })
+  },
 
 })
