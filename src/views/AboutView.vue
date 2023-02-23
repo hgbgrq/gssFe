@@ -4,6 +4,20 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import { request } from './../util/request';
+import { onMounted } from 'vue'
+
+
+const init = async () => { 
+  const res = await request(`/org`, { method: 'GET' })
+}
+
+onMounted(() => {
+  init()
+})
+
+</script>
 <style>
 @media (min-width: 1024px) {
   .about {
