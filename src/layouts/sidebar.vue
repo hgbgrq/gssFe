@@ -27,8 +27,8 @@ const adminPage = {
     ]
 }
 
-const activeMenu = (targetId: string, menu: string) => {
-  router.push(`/${targetId}/${menu}`)
+const activeMenu = (menuPath: string) => {
+  router.push(`${menuPath}`)
 }
 
 </script>
@@ -37,7 +37,7 @@ const activeMenu = (targetId: string, menu: string) => {
     <nav class = "sidebar">
         <ul>
             <li v-for="menu in adminPage.menuList" :key="menu.menuId"
-            @click="activeMenu(menu)">
+            @click="activeMenu(menu.menuPath)">
                 <div class="font__subtitle"> 
                     <div class="menu">
                         {{menu.menuName}}
