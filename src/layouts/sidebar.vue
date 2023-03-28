@@ -35,19 +35,18 @@ const activeMenu = (targetId: string, menu: string) => {
 
 <template>
     <nav class = "sidebar">
-        <ul class="flex-1 mb-2 sidebar__wrap">
+        <ul>
             <li v-for="menu in adminPage.menuList" :key="menu.menuId"
             @click="activeMenu(menu)">
-                <div class="font__subtitle">
+                <div class="font__subtitle"> 
                     <div class="menu">
-                        {{menu.menu}}
+                        {{menu.menuName}}
                     </div>
                 </div>
             </li>
         </ul>
     </nav>
 </template>
-
 <style lang="scss" scoped>
 .sidebar {
   position: fixed;
