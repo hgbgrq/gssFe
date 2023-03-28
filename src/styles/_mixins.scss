@@ -1,0 +1,135 @@
+/* ============= Typography ============= */
+$typo-size-map: (
+  "h1": 32px,
+  "h2": 28px,
+  "h3": 22px,
+  "h4": 20px,
+  "h5": 18px,
+  "h6": 17px,
+  "h7": 16px,
+  "body1": 14px,
+  "body2": 13px,
+  "body3": 12px,
+  "body4": 11px,
+);
+
+$typo-weight-map: (
+  "900": 900,
+  "800": 800,
+  "700": 700,
+  "600": 600,
+  "500": 500,
+  "400": 400,
+  "300": 300,
+  "200": 200,
+  "100": 100,
+);
+
+@function typo-size($size) {
+  @return map-get($typo-size-map, $size);
+}
+
+@function typo-weight($weight) {
+  @return map-get($typo-weight-map, $weight);
+}
+
+@mixin typography($size, $weight: 400) {
+  font-size: typo-size($size);
+  font-weight: typo-weight($weight);
+}
+
+/* ============= Button ============= */
+@mixin btn(
+  $display: inline-block,
+  $width: max-content,
+  $height: 40px,
+  $padding: 0 20px,
+  $background: $color-white,
+  $border-radius: $radius-2,
+  $color: $color-dark-2,
+  $border-color: transparent,
+  $size: 'md',
+) {
+  display: $display;
+  justify-content: center;
+  align-items: center;
+  width: $width;
+  height: $height;
+  padding: $padding;
+  background: $background;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  color: $color;
+  text-align: center;
+  box-sizing: border-box;
+  transition: $transition;
+
+  &:hover {
+    background-color: darken($background, 3%);
+  }
+  &:disabled {
+    opacity: 30%;
+    cursor: not-allowed;
+
+    &:hover {
+      background: $background;
+    }
+  }
+  @if($size == 'sm') {
+    @include typography("body3", "500");
+    min-width: 60px;
+    height: 32px;
+  }
+  @if($size == 'md') {
+    @include typography("body1", "500");
+    min-width: 90px;
+    height: 40px;
+  }
+  @if($size == 'lg') {
+    @include typography("h7", "700");
+    min-width: 150px;
+    height: 50px;
+  }
+}
+
+@mixin btn__toggle (
+  $background: $color-light-5,
+) {
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+  background: $background;
+  border-radius: 14px;
+  box-sizing: border-box;
+  transition: $transition;
+
+  &:disabled {
+    opacity: 30%;
+    cursor: not-allowed;
+
+    &:hover {
+      background: $background;
+    }
+  }
+}
+/* ============= Icon Path ============= */
+@mixin icon(
+  $name,
+  $path: "/images/icons/",
+  $format: "svg",
+  $size: "60%"
+) {
+  background: url("#{$path}#{$name}.#{$format}") no-repeat center center/#{$size};
+}
+/* ============= Divide ============= */
+@mixin divide-vertical($width: 1px, $height, $bgColor) {
+  width: $width;
+  height: $height;
+  background-color: $bgColor;
+}
+
+@mixin divide-horizon($height: 1px, $width, $bgColor) {
+  width: $width;
+  height: $height;
+  background-color: $bgColor;
+}

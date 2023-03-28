@@ -1,0 +1,77 @@
+/* ============= Layouts ============= */
+$min-width: 768px;
+$header-height: 56px;
+$sidebar-width: 240px; // 마이페이지, 관리자 SNB
+/* ============= Colors ============= */
+$color-primary: #5bb870; 
+
+$color-dark-1:#222222;
+$color-dark-2:#333333;
+$color-dark-3:#666666;
+$color-dark-4:#777777;
+$color-dark-5:#888888;
+$color-dark-6:#909090;
+$color-dark-7:#999999;
+
+$color-light-1:#fafafa;
+$color-light-2:#f8f9fb;
+$color-light-3:#f0f0f0;
+$color-light-4:#ebebeb;
+$color-light-5:#e5e5e5;
+$color-light-6:#d6dbe4;
+$color-light-7:#cccccc;
+
+$color-white: #ffffff;
+
+$color-red: #e76055;
+$color-yellow: #fab300;
+$color-green: #058012;
+
+/* ============= Fonts ============= */
+$font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+  "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
+  "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+  sans-serif;
+
+/* ============= Etc ============= */
+$radius-1: 8px;
+$radius-2: 4px;
+$transition: all 100ms linear;
+
+:root {
+  --el-text-color-regular: #222222 !important;
+  --el-disabled-bg-color: #f8f9fb !important;
+  --el-disabled-border-color: #e5e5e5 !important;
+  --el-disabled-text-color: #909090 !important;
+}
+
+.el {
+    &-select {
+      --el-select-input-focus-border-color: #5bb870 !important;
+    }
+    &-checkbox {
+      --el-checkbox-checked-bg-color:#292929 !important;
+      --el-checkbox-input-border-color-hover:#292929 !important;
+      --el-checkbox-checked-input-border-color: #292929 !important;
+   }
+    &-tree {
+      --el-tree-node-hover-bg-color: transparent !important;
+      --el-fill-color-light: #f5f7fa !important;
+    }
+    &-input {
+      --el-input-hover-border-color: #5bb870 !important;
+      --el-input-focus-border-color: #5bb870 !important;
+    }
+    &-message {
+      --el-message-padding: 16px 16px 16px 24px !important;
+      --el-message-bg-color:rgba(34, 34, 34, 0.8) !important;
+      --el-message-border-color: transparent !important;
+      --el-border-radius-base: 8px !important;
+      --el-message-text-color: #ffffff !important;
+     
+      &__closeBtn {
+        --el-message-close-size: 20px !important;
+        --el-message-close-icon-color: #ffffff !important;
+      }
+    }
+}
