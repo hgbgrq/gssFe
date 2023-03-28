@@ -4,11 +4,11 @@
 
 <template>
   <div>
-    <el-button>버튼 입니다.</el-button>
-    <p>테스트 입니다.</p>
+    <p>테스트 중입니다.</p>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<route lang="yaml">
+meta:
+  layout: default
+</route>

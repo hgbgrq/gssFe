@@ -1,0 +1,148 @@
+@charset "UTF-8";
+
+/* ============= Fonts ============= */
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Black.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-ExtraBold.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-ExtraLight.woff") format("woff");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Thin.woff") format("woff");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============= Layout ============= */
+body {
+  overflow-wrap: break-word;
+  overflow: overlay;
+  width: 100%;
+  min-width: $min-width;
+  height: 100vh;
+  margin: 0 auto;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+/* ============= Style Reset ============= */
+body,
+main,
+button,
+input,
+select,
+td,
+textarea,
+th {
+  @include typography("body1");
+  line-height: 1.5;
+  font-family: $font-family;
+}
+
+// 공통 outline
+button,
+input,
+select,
+textarea {
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+}
+
+em {
+  font-style: normal;
+}
+
+/* ============= 웹 접근성 대체 텍스트 ============= */
+.hide {
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+/* ============= Scrollbar ============= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: $color-light-7;
+  border-radius: $radius-2;
+}
+
+// hide scrollbar
+.scrollbar--hidden{
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-thumb {
+    display:none;
+  }
+}
