@@ -34,7 +34,7 @@ export default defineConfig({
     /* 모바일 화면 확인용 스트립트입니다. */
     proxy: {
       '/api': {
-        target: 'https://192.168.0.95:3333',
+        target: 'http://192.168.0.18:8080',
         changeOrigin: true,
       },
     },

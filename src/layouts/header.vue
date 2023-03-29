@@ -1,6 +1,6 @@
 <template>
     <header class="header">
-        <span class = "logo__title">
+        <span class = "logo__title" @click="activeMenu('/')">  
             hgb
         </span>
     </header>
@@ -8,6 +8,11 @@
 
 <script setup lang="ts">
 
+const router = useRouter()
+
+const activeMenu = (menuPath: string) => {
+  router.push(`${menuPath}`)
+}
 </script>
 <style lang="scss" scoped>
 .header {
