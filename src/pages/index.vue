@@ -6,6 +6,7 @@
   <div>
     <p>테스트 중입니다.</p>
   </div>
+  <Table />
 </template>
 
 <route lang="yaml">

@@ -1,19 +1,19 @@
-<template>
-    <header class="header">
-        <span class = "logo__title" @click="activeMenu('/')">  
-            hgb
-        </span>
-    </header>
-</template>
-
 <script setup lang="ts">
-
 const router = useRouter()
 
-const activeMenu = (menuPath: string) => {
-  router.push(`${menuPath}`)
+const moveHome = () => {
+  router.push('/')
 }
 </script>
+
+<template>
+  <header class="header">
+    <span class="logo__title" @click="moveHome">
+      GSS-HGB
+    </span>
+  </header>
+</template>
+
 <style lang="scss" scoped>
 .header {
   position: fixed;
@@ -25,7 +25,7 @@ const activeMenu = (menuPath: string) => {
   min-width: 1536px;
   height: 50px;
   padding: 10px 10px;
-  background-color: #f5f5dc;
+  background-color: #17BD81;
   box-sizing: border-box;
 }
 .logo {
@@ -36,7 +36,7 @@ const activeMenu = (menuPath: string) => {
     user-select: none;
 }
 .logo__title{
-  color: black;
+  color: #ffffff;
   cursor: default;
   margin-left: 3%;
   font-size: 15pt;

@@ -1,50 +1,99 @@
 <script setup lang="ts">
-
 const router = useRouter()
-
-const mainPage = {
-
-    id: 'mainPage',
-    name : '기본',
-    menuList: [
-    ]
-
-
+interface IChildren {
+  menuId: string
+  menuPath: string
+  menuName: string
 }
-
-const adminPage = {
-
-    id: 'adminPage',
-    name: '관리자 페이지',
-    menuList :[
+interface IMenuList {
+  menuId: string
+  menuPath: string
+  menuName: string
+  children: IChildren[]
+}
+interface IPageList {
+  id: string
+  name: string
+  menuList: IMenuList[]
+}
+const pageList: IPageList = reactive({
+  id: 'adminPage',
+  name: '관리자 페이지',
+  menuList: [
+    {
+      menuId: 'page',
+      menuPath: '/admin/org',
+      menuName: '페이지',
+      children: [
         {
-            menuId: 'org',
-            menuPath: '/admin/org',
-            menuName: '조직 관리'
-        }
-    ]
-}
+          menuId: 'uploadFile',
+          menuPath: '/admin/org',
+          menuName: '파일 업로드',
+        },
+        {
+          menuId: 'fileList',
+          menuPath: '/admin/org',
+          menuName: '파일 목록 조회',
+        },
+        {
+          menuId: 'purchaseOrders',
+          menuPath: '/admin/org',
+          menuName: '발주서 조회',
+        },
+      ],
+    },
+    {
+      menuId: 'admin',
+      menuPath: '/admin/org',
+      menuName: '관리자',
+      children: [
+        {
+          menuId: 'companyManagement',
+          menuPath: '/admin/org',
+          menuName: '회사 관리',
+        },
+        {
+          menuId: 'employeeManagement',
+          menuPath: '/admin/org',
+          menuName: '사원 관리',
+        },
+      ],
+    },
+  ],
+})
 
 const activeMenu = (menuPath: string) => {
-  router.push(`${menuPath}`)
+  router.push(menuPath)
 }
-
 </script>
 
 <template>
-    <nav class = "sidebar">
-        <ul>
-            <li v-for="menu in adminPage.menuList" :key="menu.menuId"
-            @click="activeMenu(menu.menuPath)">
-                <div class="font__subtitle"> 
-                    <div class="menu">
-                        {{menu.menuName}}
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </nav>
+  <nav class="sidebar">
+    <el-row class="tac">
+      <el-col>
+        <p class="title">
+          MENU
+        </p>
+        <el-menu
+          text-color="#ffffff"
+          background-color="#484d5b"
+          default-active="2"
+          class="el-menu-vertical-demo"
+        >
+          <el-sub-menu v-for="page in pageList.menuList" :key="page.menuId" :index="page.menuId">
+            <template #title>
+              <span>{{ page.menuName }}</span>
+            </template>
+            <el-menu-item v-for="childrenMenu in page.children" :key="`childrenMenu-${childrenMenu.menuId}`" :index="`${page.menuId}-${childrenMenu.menuId}`" @click="activeMenu(childrenMenu.menuPath)">
+              {{ childrenMenu.menuName }}
+            </el-menu-item>
+          </el-sub-menu>
+        </el-menu>
+      </el-col>
+    </el-row>
+  </nav>
 </template>
+
 <style lang="scss" scoped>
 .sidebar {
   position: fixed;
@@ -55,6 +104,13 @@ const activeMenu = (menuPath: string) => {
   width: 220px;
   background-color: #484d5b;
   text-align: center;
+}
+.title {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
 }
 .font__subtitle {
     padding: 8px 0;
