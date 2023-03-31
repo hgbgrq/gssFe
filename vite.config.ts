@@ -9,6 +9,7 @@ import Markdown from 'vite-plugin-vue-markdown'
 import LinkAttributes from 'markdown-it-link-attributes'
 import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
+import Inspect from 'vite-plugin-inspect'
 
 // // Elements Plus auto import 사용을 위해 추가
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -103,6 +104,7 @@ export default defineConfig({
         })
       },
     }),
+    Inspect(),
   ],
   // SCSS 전역 사용
   css: {

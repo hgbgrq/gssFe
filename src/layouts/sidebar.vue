@@ -7,7 +7,6 @@ interface IChildren {
 }
 interface IMenuList {
   menuId: string
-  menuPath: string
   menuName: string
   children: IChildren[]
 }
@@ -22,39 +21,37 @@ const pageList: IPageList = reactive({
   menuList: [
     {
       menuId: 'page',
-      menuPath: '/admin/org',
       menuName: '페이지',
       children: [
         {
-          menuId: 'uploadFile',
-          menuPath: '/admin/org',
+          menuId: 'fileUpload',
+          menuPath: '/page/fileUpload',
           menuName: '파일 업로드',
         },
         {
           menuId: 'fileList',
-          menuPath: '/admin/org',
+          menuPath: '/page/fileList',
           menuName: '파일 목록 조회',
         },
         {
           menuId: 'purchaseOrders',
-          menuPath: '/admin/org',
+          menuPath: '/page/purchaseOrders',
           menuName: '발주서 조회',
         },
       ],
     },
     {
       menuId: 'admin',
-      menuPath: '/admin/org',
       menuName: '관리자',
       children: [
         {
           menuId: 'companyManagement',
-          menuPath: '/admin/org',
+          menuPath: '/admin/companyManagement',
           menuName: '회사 관리',
         },
         {
           menuId: 'employeeManagement',
-          menuPath: '/admin/org',
+          menuPath: '/admin/employeeManagement',
           menuName: '사원 관리',
         },
       ],
@@ -77,10 +74,9 @@ const activeMenu = (menuPath: string) => {
         <el-menu
           text-color="#ffffff"
           background-color="#484d5b"
-          default-active="2"
           class="el-menu-vertical-demo"
         >
-          <el-sub-menu v-for="page in pageList.menuList" :key="page.menuId" :index="page.menuId">
+          <el-sub-menu v-for="page in pageList.menuList" :key="page.menuId" class="sub_menu" :index="page.menuId">
             <template #title>
               <span>{{ page.menuName }}</span>
             </template>
@@ -111,6 +107,9 @@ const activeMenu = (menuPath: string) => {
   font-size: 24px;
   font-weight: bold;
   color: #ffffff;
+}
+.sub_menu {
+  width: 220px;
 }
 .font__subtitle {
     padding: 8px 0;

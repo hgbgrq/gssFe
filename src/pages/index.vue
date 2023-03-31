@@ -1,15 +1,19 @@
 <script setup lang="ts">
+const router = useRouter()
 
+const movePage = () => {
+  router.push('/login')
+}
+onMounted(() => {
+  movePage()
+})
 </script>
 
 <template>
-  <div>
-    <p>테스트 중입니다.</p>
-  </div>
-  <Table />
+  <div />
 </template>
 
 <route lang="yaml">
 meta:
-  layout: default
+  layout: Login
 </route>

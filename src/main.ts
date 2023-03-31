@@ -14,7 +14,7 @@ export const createApp = ViteSSG(
   // the root component
   App,
   // vue-router options
-  { routes },
+  { routes, base: import.meta.env.BASE_URL },
   // function to have custom setups
   (ctx) => {
     // install all modules under `modules/`

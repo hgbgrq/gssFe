@@ -49,7 +49,7 @@
   &__icon {
     @apply flex-center justify-center;
     width: 40px;
-    height: 40px; 
+    height: 40px;
     border-radius: $radius-1;
     border: 1px solid $color-dark-4;
     color: $color-dark-4;
@@ -447,7 +447,7 @@
       &:hover {
         background-color: darken($color-light-3, 2%) !important;
       }
-    } 
+    }
   }
 }
 
@@ -469,7 +469,7 @@
       padding-bottom: 5px !important;
       margin: 0 5px;
       border-radius: $radius-2;
-  
+
       &:hover {
         background:rgba(34, 34, 34, 0.02) !important;
         transition: $transition;
@@ -508,7 +508,7 @@
           color: $color-dark-1 !important;
           font-weight: 500 !important;
           background: transparent !important;
-        } 
+        }
       }
     }
     &__expand-icon {
@@ -591,10 +591,10 @@
       height: 100%;
       color: $color-primary;
       @include icon(
-        $name: i-calender, 
+        $name: i-calender,
         $size: 115%
       );
-  
+
     }
   }
   &__popout {
@@ -675,7 +675,7 @@
           }
         }
       }
-    } 
+    }
     .selected {
       span{
         background-color: $color-primary !important;
@@ -781,7 +781,7 @@
             background: $color-primary;
             border: 1px solid $color-primary;
             color: $color-white;
-            
+
           }
         }
       }
@@ -1070,7 +1070,7 @@
       @apply flex-center justify-center flex-col;
       height: 200px;
     }
-    
+
     &__text {
       @include typography("body2");
     }
@@ -1123,7 +1123,7 @@
 /* ============= Tab ============= */
 .tab {
   @apply w-full;
-  
+
   &__header {
     @apply flex-center justify-between relative;
     z-index: 1;
@@ -1139,7 +1139,7 @@
       border-bottom: 1px solid $color-light-4;
     }
   }
-  
+
   &__name {
     @apply flex-center px-6;
     @include typography("h7");
@@ -1157,7 +1157,7 @@
   &__btn {
     @apply flex-center;
   }
-  
+
   &__content {
     @apply pt-6;
   }
