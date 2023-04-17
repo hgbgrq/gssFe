@@ -7,47 +7,34 @@ const route = useRouter()
 </script>
 
 <template>
-  <div class="FrameworkWrap">
-    <Header />
-    <div class="layout">
+  <Header />
+  <main class="FrameworkWrap">
+    <nav class="sb">
       <Sidebar />
-      <div class="content">
-        <router-view />
-      </div>
+    </nav>
+    <div class="content">
+      <router-view />
     </div>
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped>
-    .layout {
-      position: relative;
-      overflow-y: scroll;
+    .sb {
+      position: fixed;
+      bottom: 0rem;
+      top: 50px;
+      width: 220px;
+    }
+    .content{
       width: 100%;
       height: 100%;
-      padding-top: 50px;
-      background-color: white;
-
-      .content {
-        overflow-x: auto;
-        width: 100%;
-        height: 100%;
-        padding-left: 250px;
-        padding-right: 30px;
-
-        &>div {
-          max-width: 1500px;
-          margin: 0 auto;
-          padding: 30px 0;
-          height: 100%;
-        }
-      }
-
-      &.main {
-        padding: 0;
-        .content__wrap {
-          width: 100%;
-          padding: 0;
-        }
-      }
+      overflow-y: auto;
+      margin-left: 220px;
+      padding: 40px 48px 80px;
     }
-    </style>
+    .FrameworkWrap{
+      height: 100%;
+      display: flex;
+      padding-top: 50px;
+    }
+</style>

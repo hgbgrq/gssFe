@@ -13,8 +13,11 @@ export const request = async (url: string, options: IReqOptions) => {
   const reqObj: RequestInit = {
     method,
   }
-  if (headers)
-    reqObj.headers = headers
+  if (!headers) {
+    reqObj.headers = {
+      'Content-Type': 'application/json',
+    }
+  }
 
   if (data)
     reqObj.body = JSON.stringify(data)
