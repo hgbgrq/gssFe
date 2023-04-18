@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Search } from "@element-plus/icons-vue";
+import OrgPopup from "~/components/popup/OrgPopup.vue";
 
 interface IOrgList {
   orgId: string
@@ -14,6 +15,11 @@ const searchForm = {
   keyWord: '',
   orgUuid: '',
 }
+
+const popup: OrgPopup = reactive({
+  show: false,
+  orgId: '',
+})
 
 const orgList = ref<IOrgList[]>([])
 const checkedList = ref<IOrgList[]>([])
@@ -48,6 +54,19 @@ const deleteOrg = async () => {
   loading = ref(false)
 }
 
+const closePopup = () => {
+  popup.show = false
+}
+
+const openPopup = () => {
+  popup.show = true
+  popup.orgId = 'asdasdqweqwe'
+}
+
+const reload = () => {
+  getOrgList()
+}
+
 const handleSelectionChange = (val: IOrgList[]) => {
   checkedList.value = val
 }
@@ -69,8 +88,8 @@ onMounted(async () => {
     <div class="grid-header">
       <div></div>
       <div class = "button-location">
-        <el-button type="primary" @click="deleteOrg">삭제</el-button>
-        <el-button type="primary">등록</el-button>
+        <el-button type="info" @click="deleteOrg">삭제</el-button>
+        <el-button type="primary" @click="openPopup" >등록</el-button>
       </div>
     </div>
     <div>
@@ -82,8 +101,15 @@ onMounted(async () => {
         <el-table-column prop="orgPaxNumber" label="팩스번호" />
       </el-table>
     </div>
+    <div>
+      <OrgPopup
+        v-if="popup.show"
+        :orgId="popup.orgId"
+        @close="closePopup"
+        @reload="reload"
+      />
+    </div>
   </div>
-  <input type="checkbox">
 </template>
 
 <route lang="yaml">
