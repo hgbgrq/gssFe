@@ -1,13 +1,8 @@
 <script setup lang="ts">
-
-import { Popup } from "~/components/types/popup";
-
-const popup: Popup = reactive({
-  name: 'VacationP',
-  title: '회사 등록',
-  show: true,
-  width: '1000px',
-})
+import type { VueDaumPostcodeCompleteResult } from 'vue-daum-postcode'
+import type { Popup } from '~/components/types/popup'
+import DaumPostPopup from '~/components/popup/DaumPostPopup.vue'
+import type { Org } from '~/admin/companyManagement/types'
 
 const props = defineProps<{
   orgId: string
@@ -18,9 +13,59 @@ const emit = defineEmits([
   'reload',
 ])
 
+const popup: Popup = reactive({
+  name: '',
+  title: '회사 등록',
+  show: true,
+  width: '1000px',
+})
+
+const org = reactive<Org>({
+  orgId: '',
+  orgName: '',
+  orgEmail: '',
+  orgAddress: '',
+  orgAddressDetail: '',
+  orgNumber: '',
+  orgPaxNumber: '',
+  orgZoneCode: '',
+  orgEtc: '',
+})
+
+const postPopup = ref(false)
+const checkOrgName = ref(false)
+
+const complete = (newResult: VueDaumPostcodeCompleteResult) => {
+  postPopup.value = false
+  org.orgZoneCode = newResult.zonecode
+  org.orgAddress = `${newResult.address}(${newResult.buildingName})`
+  console.log(newResult)
+}
+const DaumPostPopupOpen = () => {
+  postPopup.value = true
+  console.log('오픈')
+}
 const close = () => {
   emit('close')
-  emit('reload')
+}
+
+const closePost = () => {
+  postPopup.value = false
+}
+
+const isChange = () => {
+  checkOrgName.value = false
+}
+
+const checkDuplicateName = async () => {
+  try {
+    const res = await request(`/org/check/${org.orgName}`, { method: 'GET' })
+    if (!res)
+      checkOrgName.value = true
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
@@ -30,30 +75,32 @@ const close = () => {
     :width="popup.width"
     top="100px"
     :title="popup.title"
-    @close="close"
     draggable
     style="height: 70%"
+    @close="close"
   >
     <div class="popup">
       <div class="block-1">
         <label class="label-1">
           회사이름
         </label>
-        <input type="text" class="input-1">
-        <el-button type="info" class="button-1">중복체크</el-button>
+        <input v-model="org.orgName" type="text" class="input-1" @input="isChange">
+        <el-button type="info" class="button-1" @click="checkDuplicateName">
+          중복체크
+        </el-button>
       </div>
       <div class="block-2">
         <div class="th-1">
           <label class="label-1">
             전화 번호
           </label>
-          <input type="text" class="input-2">
+          <input v-model="org.orgNumber" type="text" class="input-2">
         </div>
         <div class="th-1">
           <label class="label-1">
             팩스번호
           </label>
-          <input type="text" class="input-2">
+          <input v-model="org.orgPaxNumber" type="text" class="input-2">
         </div>
       </div>
       <div class="block-2">
@@ -61,27 +108,60 @@ const close = () => {
           <label class="label-1">
             이메일
           </label>
-          <input type="text" class="input-2">
+          <input v-model="org.orgEmail" type="text" class="input-2">
         </div>
         <div class="th-1">
           <label class="label-1">
-            담당자
+            비고
           </label>
-          <input type="text" class="input-2">
+          <input v-model="org.orgEtc" type="text" class="input-2">
         </div>
+      </div>
+      <div class="block-3">
+        <label class="label-1">
+          우편번호
+        </label>
+        <input v-model="org.orgZoneCode" type="text" class="input-3" disabled>
+        <el-button type="info" class="button-1" @click="DaumPostPopupOpen">
+          주소 찾기
+        </el-button>
+      </div>
+      <div class="block-3">
+        <label class="label-1">
+          주소
+        </label>
+        <input v-model="org.orgAddress" type="text" class="input-2" disabled>
+      </div>
+      <div class="block-3">
+        <label class="label-1">
+          상세 주소
+        </label>
+        <input v-model="org.orgAddressDetail" type="text" class="input-2">
+      </div>
+      <div>
+        <DaumPostPopup
+          v-if="postPopup"
+          @complete="complete"
+          @close="closePost"
+        />
       </div>
     </div>
     <template #footer>
       <div class="footer">
-        <el-button type="info">취소</el-button>
-        <el-button type="primary">등록</el-button>
+        <el-button type="info">
+          취소
+        </el-button>
+        <el-button type="primary">
+          등록
+        </el-button>
       </div>
     </template>
   </el-dialog>
 </template>
+
 <style lang="scss" scoped>
   .popup{
-    height: 70%;
+    height: 100%;
     overflow-y: auto;
     padding: 0 40px!important;
   }
@@ -93,6 +173,10 @@ const close = () => {
     width: 100%;
     height: 80px;
     display: flex;
+  }
+  .block-3{
+    margin-bottom: 1rem;
+    height: 50px;
   }
   .label-1{
     display: flex;
@@ -114,6 +198,18 @@ const close = () => {
   }
   .input-2{
     width: 80%;
+    font-size: 14px;
+    height: 40px;
+    padding: 8px 15px;
+    background: #ffffff;
+    border: 1px solid #d6dbe4;
+    border-radius: 4px;
+    color: #222;
+    caret-color: #5bb870;
+    transition: all .1s linear;
+  }
+  .input-3{
+    width: 30%;
     font-size: 14px;
     height: 40px;
     padding: 8px 15px;

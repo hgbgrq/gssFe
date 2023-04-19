@@ -25,3 +25,4 @@ export const createApp = ViteSSG(
     ).forEach(i => i.install?.(ctx))
   },
 )
+

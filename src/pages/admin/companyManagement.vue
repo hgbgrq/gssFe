@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Search } from "@element-plus/icons-vue";
-import OrgPopup from "~/components/popup/OrgPopup.vue";
+import { Search } from '@element-plus/icons-vue'
+import OrgPopup from '~/components/popup/OrgPopup.vue'
 
 interface IOrgList {
   orgId: string
@@ -42,9 +42,9 @@ const deleteOrg = async () => {
   try {
     loading = ref(true)
     const params = ref<String[]>([])
-    for (let i = 0; i < checkedList.value.length; i++){
+    for (let i = 0; i < checkedList.value.length; i++)
       params.value[i] = checkedList.value[i].orgId
-    }
+
     const res = await request('/org/delete', { method: 'POST', data: params.value })
   }
   catch (error) {
@@ -60,7 +60,6 @@ const closePopup = () => {
 
 const openPopup = () => {
   popup.show = true
-  popup.orgId = 'asdasdqweqwe'
 }
 
 const reload = () => {
@@ -86,14 +85,18 @@ onMounted(async () => {
   </div>
   <div>
     <div class="grid-header">
-      <div></div>
-      <div class = "button-location">
-        <el-button type="info" @click="deleteOrg">삭제</el-button>
-        <el-button type="primary" @click="openPopup" >등록</el-button>
+      <div />
+      <div class="button-location">
+        <el-button type="info" @click="deleteOrg">
+          삭제
+        </el-button>
+        <el-button type="primary" @click="openPopup">
+          등록
+        </el-button>
       </div>
     </div>
     <div>
-      <el-table :data="orgList" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="orgList" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="40" />
         <el-table-column prop="orgName" label="이름" />
         <el-table-column prop="orgAddress" label="주소" />
@@ -104,7 +107,7 @@ onMounted(async () => {
     <div>
       <OrgPopup
         v-if="popup.show"
-        :orgId="popup.orgId"
+        :org-id="popup.orgId"
         @close="closePopup"
         @reload="reload"
       />

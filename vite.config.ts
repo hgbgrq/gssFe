@@ -35,7 +35,7 @@ export default defineConfig({
     /* 모바일 화면 확인용 스트립트입니다. */
     proxy: {
       '/api': {
-        //target: 'http://ec2-15-164-222-108.ap-northeast-2.compute.amazonaws.com:9000',
+        // target: 'http://ec2-15-164-222-108.ap-northeast-2.compute.amazonaws.com:9000',
         target: 'http://localhost:9000',
         changeOrigin: true,
       },

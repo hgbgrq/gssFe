@@ -21,9 +21,11 @@ declare module '@vue/runtime-core' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    PopupDaumPostPopup: typeof import('./components/popup/DaumPostPopup.vue')['default']
     PopupOrgPopup: typeof import('./components/popup/OrgPopup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VueDaumPostcode: typeof import('vue-daum-postcode')['VueDaumPostcode ']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
