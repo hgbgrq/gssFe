@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { VueDaumPostcodeCompleteResult } from 'vue-daum-postcode'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Popup } from '~/components/types/popup'
 import DaumPostPopup from '~/components/popup/DaumPostPopup.vue'
 import type { Org } from '~/admin/companyManagement/types'
+import { isEmpty } from '~/composables/utils'
 
 const props = defineProps<{
   orgId: string
+  type: string
 }>()
 
 const emit = defineEmits([
@@ -15,9 +18,10 @@ const emit = defineEmits([
 
 const popup: Popup = reactive({
   name: '',
-  title: '회사 등록',
+  title: '',
   show: true,
   width: '1000px',
+  button: '',
 })
 
 const org = reactive<Org>({
@@ -47,6 +51,7 @@ const DaumPostPopupOpen = () => {
 }
 const close = () => {
   emit('close')
+  emit('reload')
 }
 
 const closePost = () => {
@@ -60,13 +65,92 @@ const isChange = () => {
 const checkDuplicateName = async () => {
   try {
     const res = await request(`/org/check/${org.orgName}`, { method: 'GET' })
-    if (!res)
+    if (!res) {
       checkOrgName.value = true
+      ElMessageBox.alert('사용 가능한 아이디 입니다.')
+    }
+    else { ElMessageBox.alert('이미 존재하는 아이디 입니다.') }
   }
   catch (error) {
     console.error(error)
   }
 }
+
+const validation = (): boolean => {
+  if (isEmpty(org.orgName)) {
+    // ElMessage({ message: '이름을 입력하지 않았습니다.', type: 'warning' })
+    ElMessageBox.alert('이름을 입력하지 않았습니다.')
+    return false
+  }
+  return true
+}
+
+const popupButton = async () => {
+  if (!checkOrgName.value) {
+    // ElMessage({ message: '이름 중복 체크를 완료해주세요.', type: 'warning' })
+    ElMessageBox.alert('이름 중복 체크를 완료해주세요.')
+    return
+  }
+  console.log(checkOrgName)
+  console.log(validation)
+  if (!validation())
+    return
+
+  try {
+    const data = {
+      ...org,
+    }
+    if (props.type === 'modify') {
+      const res = await request('/org/modify', { method: 'POST', data })
+      if (res.code === '200') {
+        ElMessageBox.alert('수정 하였습니다.')
+        close()
+      }
+      else { ElMessageBox.alert(res.desc) }
+    }
+    else {
+      const res = await request('/org', { method: 'POST', data })
+      if (res.code === '200') {
+        ElMessageBox.alert('등록 하였습니다.')
+        close()
+      }
+      else { ElMessageBox.alert(res.desc) }
+    }
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const getDetailOrg = async () => {
+  try {
+    const res = await request(`/org/${props.orgId}`, { method: 'GET' })
+    org.orgName = res.orgName
+    org.orgNumber = res.orgNumber
+    org.orgPaxNumber = res.orgPaxNumber
+    org.orgEmail = res.orgEmail
+    org.orgEtc = res.orgEtc
+    org.orgZoneCode = res.orgZoneCode
+    org.orgAddress = res.orgAddress
+    org.orgAddressDetail = res.orgAddressDetail
+    org.orgId = res.orgId
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+onMounted(async () => {
+  if (props.type === 'modify') {
+    popup.title = '회사 수정'
+    popup.button = '수정'
+    checkOrgName.value = true
+    await getDetailOrg()
+  }
+  else {
+    popup.title = '회사 등록'
+    popup.button = '등록'
+  }
+})
 </script>
 
 <template>
@@ -148,11 +232,11 @@ const checkDuplicateName = async () => {
     </div>
     <template #footer>
       <div class="footer">
-        <el-button type="info">
+        <el-button type="info" @click="close">
           취소
         </el-button>
-        <el-button type="primary">
-          등록
+        <el-button type="primary" @click="popupButton">
+          {{ popup.button }}
         </el-button>
       </div>
     </template>

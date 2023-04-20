@@ -19,6 +19,7 @@ const searchForm = {
 const popup: OrgPopup = reactive({
   show: false,
   orgId: '',
+  type: '',
 })
 
 const orgList = ref<IOrgList[]>([])
@@ -60,6 +61,7 @@ const closePopup = () => {
 
 const openPopup = () => {
   popup.show = true
+  popup.type = 'registration'
 }
 
 const reload = () => {
@@ -73,6 +75,12 @@ const handleSelectionChange = (val: IOrgList[]) => {
 onMounted(async () => {
   await getOrgList()
 })
+
+const rowClick = (row: IOrgList) => {
+  popup.orgId = row.orgId
+  popup.show = true
+  popup.type = 'modify'
+}
 </script>
 
 <template>
@@ -80,7 +88,7 @@ onMounted(async () => {
     회사 관리
   </h1>
   <div class="search-form">
-    <input v-model="searchForm.keyWord" class="form-input">
+    <input v-model="searchForm.keyWord" class="form-input" @keyup.enter="getOrgList">
     <el-button :icon="Search" circle @click="getOrgList" />
   </div>
   <div>
@@ -96,7 +104,7 @@ onMounted(async () => {
       </div>
     </div>
     <div>
-      <el-table v-loading="loading" :data="orgList" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="orgList" style="width: 100%" @selection-change="handleSelectionChange" @row-click="rowClick">
         <el-table-column type="selection" width="40" />
         <el-table-column prop="orgName" label="이름" />
         <el-table-column prop="orgAddress" label="주소" />
@@ -108,6 +116,7 @@ onMounted(async () => {
       <OrgPopup
         v-if="popup.show"
         :org-id="popup.orgId"
+        :type="popup.type"
         @close="closePopup"
         @reload="reload"
       />

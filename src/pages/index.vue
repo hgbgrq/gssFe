@@ -2,7 +2,7 @@
 const router = useRouter()
 
 const movePage = () => {
-  router.push('/login')
+  router.push('/main')
 }
 onMounted(() => {
   movePage()
