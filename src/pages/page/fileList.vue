@@ -1,17 +1,39 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
 import type { File, Option } from '~/fileList/types'
-import OrgPopup from '~/components/popup/OrgPopup.vue'
+import { isEmpty } from '~/composables/utils'
 
 const searchForm = {
   keyWord: '',
   keyWordType: '',
-  date: '',
+  startDate: '',
+  endDate: '',
 }
 const options = ref<Option[]>([])
-const date = ref('')
+const date = ref()
 const loading = ref(false)
 const fileList = ref<File[]>([])
+
+const getFileList = async () => {
+  if (!isEmpty(date.value)) {
+    searchForm.startDate = date.value[0].toISOString()
+    searchForm.endDate = date.value[1].toISOString()
+  }
+  try {
+    const params = {
+      ...searchForm,
+    }
+    const res = await request('/file', { method: 'GET', params })
+    fileList.value = res.list
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(async () => {
+  await getFileList()
+})
 </script>
 
 <template>
@@ -28,7 +50,7 @@ const fileList = ref<File[]>([])
       />
     </el-select>
     <input v-model="searchForm.keyWord" class="form-input">
-    <el-button :icon="Search" circle />
+    <el-button :icon="Search" circle @click="getFileList" />
   </div>
   <div class="search-form">
     <div class="m-2">
@@ -56,7 +78,7 @@ const fileList = ref<File[]>([])
     <div>
       <el-table v-loading="loading" :data="fileList" style="width: 100%">
         <el-table-column type="selection" width="40" />
-        <el-table-column prop="fileName" label="이름" />
+        <el-table-column prop="fileName" label="파일 이름" />
         <el-table-column prop="fileCreateDate" label="등록일" />
         <el-table-column prop="fileCreateUserName" label="등록자" />
       </el-table>
@@ -76,7 +98,7 @@ meta:
   line-height: 40px;
 }
 .search-form {
-  width: 50%;
+  width: 70%;
   position: relative;
   justify-content: space-between;
 }
@@ -90,6 +112,7 @@ meta:
   border-radius: 4px;
   color: #222;
   caret-color: #5bb870;
+  justify-content: space-between;
 }
 .grid-header{
   margin-bottom: 0.5rem;

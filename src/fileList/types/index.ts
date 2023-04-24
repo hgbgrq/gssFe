@@ -6,8 +6,7 @@ export interface Option {
 export interface File {
   fileId: string
   fileName: string
-  fileCreateDate: string
-  fileCreateUserId: string
-  fileCreateUserName: string
-  fileDeadLine: string
+  createUserId: string
+  createUserName: string
+  createDate: string
 }
