@@ -10,3 +10,7 @@ export interface File {
   createUserName: string
   createDate: string
 }
+
+export interface FileUploadPopup {
+  show: boolean
+}
