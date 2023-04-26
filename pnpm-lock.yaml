@@ -130,7 +130,7 @@ devDependencies:
     specifier: ^0.10.1
     version: 0.10.1
   swiper:
-    specifier: ^9.0.5
+    specifier: ^9.1.1
     version: 9.1.1
   taze:
     specifier: ^0.7.6

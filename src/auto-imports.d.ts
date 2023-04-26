@@ -5,6 +5,7 @@ declare global {
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
   const customRef: typeof import('vue')['customRef']
+  const dateFormat: typeof import('./composables/utils')['dateFormat']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const downloadExcelFile: typeof import('./composables/utils')['downloadExcelFile']
@@ -71,6 +72,7 @@ declare module 'vue' {
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
+    readonly dateFormat: UnwrapRef<typeof import('./composables/utils')['dateFormat']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly downloadExcelFile: UnwrapRef<typeof import('./composables/utils')['downloadExcelFile']>

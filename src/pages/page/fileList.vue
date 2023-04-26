@@ -129,9 +129,11 @@ const initSearch = () => {
         end-placeholder="끝 시간"
       />
     </div>
-    <el-button type="success" @click="initSearch">
-      검색 조건 초기화
-    </el-button>
+    <div>
+      <el-button type="success" @click="initSearch">
+        검색 조건 초기화
+      </el-button>
+    </div>
   </div>
   <div>
     <div class="grid-header">
@@ -190,7 +192,7 @@ meta:
 .search-form {
   width: 70%;
   position: relative;
-  justify-content: space-between;
+  justify-content: start;
 }
 .form-input{
   width: 100%;
