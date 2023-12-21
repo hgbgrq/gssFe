@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
+import { File } from '~/fileList/types'
 interface selectBox {
   code: string
   name: string
 }
 interface ISeachForm {
-  orgId: string
+  orgId: string[]
   keyWordType: string
   keyWord: string
   isPayment: number
@@ -24,6 +25,7 @@ interface IProduct {
   paymentDate: string
   orgId: string
   orgName: string
+  totalPrdPrc: number
 }
 interface IStac {
   orderMonth: string
@@ -31,13 +33,24 @@ interface IStac {
 }
 
 const searchForm: ISeachForm = reactive({
-  orgId: '',
+  orgId: [],
   keyWordType: '',
   keyWord: '',
   isPayment: 1,
 })
 
-const orgList = ref <selectBox[]>([])
+const orgList = ref <selectBox[]>([
+  {
+    code: '테스트1',
+    name: '테스트1',
+  },
+  {
+    code: '테스트2',
+    name: '테스트2',
+  },
+])
+
+const checkedList = ref<IProduct[]>([])
 const typeList = ref <selectBox[]>([])
 const date = ref()
 const stacList = ref<IStac[]>([])
@@ -46,7 +59,13 @@ const search = () => {
   console.log(searchForm)
 }
 
+const handleSelectionChange = (val: IProduct[]) => {
+  console.log(val)
+  checkedList.value = val
+}
+
 const getStacList = async () => {
+  console.log(searchForm)
   try {
     const res = await request('/stac', { method: 'GET' })
     stacList.value = res.stacList
@@ -71,7 +90,13 @@ onMounted(async () => {
       <span>
         회사
       </span>
-      <el-select v-model="searchForm.orgId" class="m-2" placeholder="Select">
+      <el-select
+        v-model="searchForm.orgId"
+        class="m-2"
+        placeholder="Select"
+        multiple
+        show-checkbox
+      >
         <el-option
           v-for="item in orgList"
           :key="item.code"
@@ -140,16 +165,22 @@ onMounted(async () => {
     >
       <SwiperSlide v-for="(stac, idx) in stacList" :key="idx">
         <div>
-          <span>{{ stac.orderMonth }}</span>
-          <el-table v-loading="loading" :data="stac.productList">
+          <div>
+            <span>{{ stac.orderMonth }}</span>
+            <el-button type="info">
+              결재
+            </el-button>
+          </div>
+          <el-table v-loading="loading" :data="stac.productList" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="40" />
             <el-table-column prop="orgName" label="회사이름" />
             <el-table-column prop="prdStyleNo" label="스타일 넘버" />
             <el-table-column prop="prdItem" label="아이템" />
             <el-table-column prop="prdSize" label="사이즈" />
             <el-table-column prop="prdColor" label="색" />
             <el-table-column prop="prdQty" label="수량" />
-            <el-table-column prop="prdPrc" label="가격" />
-            <el-table-column prop="isPayment" label="결재 여부" />
+            <el-table-column prop="prdPrc" label="단가" />
+            <el-table-column prop="totalPrdPrc" label="금액" />
             <el-table-column prop="paymentDate" label="결재 날자" />
           </el-table>
         </div>

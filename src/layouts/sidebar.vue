@@ -31,12 +31,17 @@ const pageList: IPageList = reactive({
         {
           menuId: 'purchaseOrders',
           menuPath: '/page/purchaseOrders',
-          menuName: '발주서 조회',
+          menuName: '발주서',
         },
         {
           menuId: 'bill',
           menuPath: '/page/bill',
           menuName: '매입장',
+        },
+        {
+          menuId: 'order',
+          menuPath: '/page/order',
+          menuName: '발주서 관리',
         },
       ],
     },

@@ -163,5 +163,6 @@ meta:
   border-radius: 4px;
   color: #222;
   caret-color: #5bb870;
+  margin-right: 10px;
 }
 </style>
