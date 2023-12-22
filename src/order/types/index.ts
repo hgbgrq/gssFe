@@ -11,3 +11,20 @@ export interface Order{
   ordOrderingDate: string
   orgDeadLine: string
 }
+
+export interface Product {
+  styleNo: string
+  item: string
+  size: string
+  color: string
+  qty: string
+  etc: string
+}
+
+export interface Ordering {
+  orderName: string
+  orgId: string
+  orderingDate: string
+  deadLineDate: string
+  productList: Product[]
+}

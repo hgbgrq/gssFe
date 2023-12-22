@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Organization, Order } from "~/order/types";
 
+const router = useRouter()
 
 const organizations = ref<Organization[]>([]);
 const state = ref("");
@@ -78,17 +79,26 @@ const createFilter = (queryString: string) => {
     );
   };
 };
+
 const handleSelect = (item: Organization) => {
   console.log(item);
 };
 
+const moveEnrollPage = () => {
+  router.push('/page/enrollOrder')
+}
+
+const handleCurrentChange = (page: number) => {
+  loading.value = true
+  searchForm.row = page
+  loading.value = false
+}
 
 onMounted(
   async () => {
   await getOrderList()
   await getOrganizationList();
   }
-  
 )
 
 </script>
@@ -136,7 +146,7 @@ onMounted(
     <div />
     <div class="button-location">
       <el-button type="danger" @click="deleteFile"> 삭제 </el-button>
-      <el-button type="primary" @click="openPopup"> 등록 </el-button>
+      <el-button type="primary" @click="moveEnrollPage"> 등록 </el-button>
     </div>
   </div>
 
