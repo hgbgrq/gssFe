@@ -4,27 +4,24 @@ export interface Organization {
 }
 
 export interface Order{
-  ordId: string
-  ordName: string
-  orgId: string
+  orderId: string
   orgName: string
-  ordOrderingDate: string
-  orgDeadLine: string
+  orderOrderingDate: string
+  orderStyleNos: string
 }
 
 export interface Product {
-  styleNo: string
-  item: string
-  size: string
-  color: string
-  qty: string
-  etc: string
+  productStyleNo: string
+  productItem: string
+  productSize: string
+  productColor: string
+  productQty: string
+  productEtc: string
 }
 
 export interface Ordering {
-  orderName: string
+  orderOrderingDate: string
+  orderDeadLineDate: string
   orgId: string
-  orderingDate: string
-  deadLineDate: string
   productList: Product[]
 }

@@ -9,10 +9,9 @@ const oroderName = ref("");
 const selectedOrg = ref("");
 const state = ref("");
 const enrollOrderData = reactive<Ordering>({
-  orderName: oroderName.value,
   orgId: selectedOrg.value,
-  orderingDate: orderate.value,
-  deadLineDate: deadLineDate.value,
+  orderOrderingDate: orderate.value,
+  orderDeadLineDate: deadLineDate.value,
   productList: enrollProduct.value
 });
 let loading = ref(false)
@@ -52,12 +51,12 @@ const handleSelect = (item: Organization) => {
 
 const onAddItem = () => {
   enrollProduct.value.push({
-    styleNo: "",
-    item: "",
-    size: "",
-    color: "",
-    qty: "",
-    etc: "",
+    productStyleNo: "",
+    productItem: "",
+    productSize: "",
+    productColor: "",
+    productQty: "",
+    productEtc: "",
   });
 };
 
@@ -89,11 +88,9 @@ const convertDate = (date : Date) =>{
 const Ordering = async () =>{
 
     loading.value = true
-
-    enrollOrderData.orderName = oroderName.value
     enrollOrderData.orgId = selectedOrg.value
-    enrollOrderData.orderingDate = convertDate(orderate.value)
-    enrollOrderData.deadLineDate = convertDate(deadLineDate.value)
+    enrollOrderData.orderOrderingDate = convertDate(orderate.value)
+    enrollOrderData.orderDeadLineDate = convertDate(deadLineDate.value)
 
     const orderId = ref();
     const data = {
@@ -161,32 +158,32 @@ onMounted(
       <el-table :data="enrollProduct" style="width: 100%">
         <el-table-column label="StyleNo" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].styleNo" />
+            <el-input v-model="enrollProduct[scope.$index].productStyleNo" />
           </template>
         </el-table-column>
         <el-table-column label="Item" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].item" />
+            <el-input v-model="enrollProduct[scope.$index].productItem" />
           </template>
         </el-table-column>
         <el-table-column label="Size" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].size" />
+            <el-input v-model="enrollProduct[scope.$index].productSize" />
           </template>
         </el-table-column>
         <el-table-column label="Color" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].color" />
+            <el-input v-model="enrollProduct[scope.$index].productColor" />
           </template>
         </el-table-column>
         <el-table-column label="Qty" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].qty" />
+            <el-input v-model="enrollProduct[scope.$index].productQty" />
           </template>
         </el-table-column>
         <el-table-column label="Etc" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].etc" />
+            <el-input v-model="enrollProduct[scope.$index].productEtc" />
           </template>
         </el-table-column>
         <el-table-column fixed="right" width="60">

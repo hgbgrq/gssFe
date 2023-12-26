@@ -57,7 +57,7 @@ const handleSelectionChange = (val: Order[]) => {
 
 const downloadFile = async (row: number) => {
   try {
-    await downloadExcelFile(`/order/downloadExcel/${orderList.value[row].ordId}`, { method: 'GET' })
+    await downloadExcelFile(`/order/downloadExcel/${orderList.value[row].orderId}`, { method: 'GET' })
   }
   catch (error) {
     console.error(error)
@@ -154,8 +154,8 @@ onMounted(
     <el-table v-loading="loading" :data="orderList" style="width: 100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" />
       <el-table-column prop="orgName" label="회사" />
-      <el-table-column prop="orderName" label="발주서" />
-      <el-table-column prop="ordOrderingDate" label="발주일" />
+      <el-table-column prop="orderStyleNos" label="styleNo" />
+      <el-table-column prop="orderOrderingDate" label="발주일" />
       <el-table-column label="파일 다운로드" width="120">
         <template #default="scope">
           <el-button
