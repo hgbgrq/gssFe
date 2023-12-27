@@ -24,14 +24,9 @@ const pageList: IPageList = reactive({
       menuName: '페이지',
       children: [
         {
-          menuId: 'fileList',
-          menuPath: '/page/fileList',
-          menuName: '파일 목록 조회',
-        },
-        {
-          menuId: 'purchaseOrders',
-          menuPath: '/page/purchaseOrders',
-          menuName: '발주서',
+          menuId: 'enrollOrder',
+          menuPath: '/page/enrollOrder',
+          menuName: '발주서 등록',
         },
         {
           menuId: 'bill',

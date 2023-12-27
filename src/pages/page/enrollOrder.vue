@@ -127,10 +127,6 @@ onMounted(
   <div>
     <div class="search-box">
       <div class="search-form">
-        <span class="serach-label"> 발주서 이름 </span>
-        <el-input v-model="oroderName" />
-      </div>
-      <div class="search-form">
         <span class="serach-label"> 회사 </span>
         <div>
           <el-autocomplete

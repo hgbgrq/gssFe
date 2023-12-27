@@ -1,84 +1,194 @@
 <script setup lang="ts">
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/css'
 import { File } from '~/fileList/types'
-interface selectBox {
-  code: string
-  name: string
-}
+
+import type { Organization} from "~/order/types";
+import 'swiper/css';
+
 interface ISeachForm {
-  orgId: string[]
-  keyWordType: string
-  keyWord: string
-  isPayment: number
+  orgId: string
+  startMonth: string
+  endMonth: string
 }
 interface IProduct {
+  orderId: string
   productId: string
-  prdStyleNo: string
-  prdItem: string
-  prdSize: string
-  prdColor: string
-  prdQty: string
-  prdPrc: string
-  prdEtc: string
-  isPayment: string
-  paymentDate: string
-  orgId: string
-  orgName: string
+  productStyleNo: string
+  productItem: string
+  productSize: string
+  productColor: string
+  productQty: string
+  productPrice: string
+  productEtc: string
+  orderOrderingDate: string
   totalPrdPrc: number
 }
-interface IStac {
-  orderMonth: string
-  productList: IProduct[]
+interface IOrganizationInfo {
+  orgId: string
+  orgName: string
+}
+
+interface stacInfo {
+  month: string
+  stacProductList: IProduct[]
+}
+
+interface IcommonCode {
+  commonId: string
+  commonName: string
+  commonDesc: string
 }
 
 const searchForm: ISeachForm = reactive({
-  orgId: [],
-  keyWordType: '',
-  keyWord: '',
-  isPayment: 1,
+  orgId: '',
+  startMonth: '',
+  endMonth: '',
 })
 
-const orgList = ref <selectBox[]>([
-  {
-    code: '테스트1',
-    name: '테스트1',
-  },
-  {
-    code: '테스트2',
-    name: '테스트2',
-  },
-])
 
+const organizationInfo = ref<IOrganizationInfo>();
+const stacInfoList = ref<stacInfo[]>();
 const checkedList = ref<IProduct[]>([])
-const typeList = ref <selectBox[]>([])
-const date = ref()
-const stacList = ref<IStac[]>([])
+const startMonth = ref("")
+const endMonth = ref("")
+const state = ref("");
 const loading = ref(false)
+const inputMode = ref(true)
+const modeNmae = ref("단가 입력")
+const modeType =ref("info")
+let totalCount = ref(0)
+const organizations = ref<Organization[]>([]);
+const monthCommonCodes = ref<IcommonCode[]>([]);
+
+
+
 const search = () => {
   console.log(searchForm)
 }
 
+const changeMode = () =>{
+  if (inputMode.value){
+    inputMode.value = false;
+    modeType.value = "primary";
+  }
+  else{
+    modifyPrice();
+    inputMode.value = true;
+    modeType.value = "info";
+  }
+}
+
+const monthQuerySearch = (queryString: string, cb: any) =>{
+  const results = queryString
+    ? monthCommonCodes.value.filter(monthCreateFilter(queryString))
+    : monthCommonCodes.value;
+  cb(results);
+}
+
+const monthCreateFilter = (queryString: string) => {
+  return (commonCode: IcommonCode) => {
+    return (
+      commonCode.commonName.toLowerCase().indexOf(queryString.toLowerCase()) !==
+      -1
+    );
+  };
+};
+
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? organizations.value.filter(createFilter(queryString))
+    : organizations.value;
+  cb(results);
+};
+
+const createFilter = (queryString: string) => {
+  return (organization: Organization) => {
+    return (
+      organization.orgName.toLowerCase().indexOf(queryString.toLowerCase()) !==
+      -1
+    );
+  };
+};
+
+const getOrganizationList = async () =>{
+
+  try {
+    const res = await request('/org', { method: 'GET' })
+    organizations.value = res.list;
+  }catch (error){
+    console.log(error)
+  }
+}
+
+const getMonthCommonCode = async () =>{
+  try {
+    const res = await request('/common-code/month-code', { method: 'GET' })
+    monthCommonCodes.value = res.commonCodeList;
+  }catch (error){
+    console.log(error)
+  }
+}
+
+const modifyPrice = async() =>{
+
+  const data = {
+    stacProductReqList: stacInfoList.value
+  }
+  try {
+    const res = await request('/stac', { method: 'POST', data })
+    console.log(res)
+    if(res.code ==='200'){
+      getStacList();
+    }
+  }catch (error) {
+    console.log(error)
+  }
+
+}
+
+const handleSelect = (item: Organization) => { 
+  searchForm.orgId = JSON.parse(
+    JSON.stringify(item.orgId)
+  );
+};
+
+const startMonthHandleSelect = (item: IcommonCode) =>{
+  searchForm.startMonth = JSON.parse(
+    JSON.stringify(item.commonId)
+  );
+}
+
+const endMonthHandleSelect = (item: IcommonCode) =>{
+  searchForm.endMonth = JSON.parse(
+    JSON.stringify(item.commonId)
+  );
+}
+
 const handleSelectionChange = (val: IProduct[]) => {
-  console.log(val)
   checkedList.value = val
 }
 
+
 const getStacList = async () => {
-  console.log(searchForm)
+  const params = {
+  ...searchForm,
+  }
   try {
-    const res = await request('/stac', { method: 'GET' })
-    stacList.value = res.stacList
-    console.log(stacList.value)
+    const res = await request('/stac', { method: 'GET' ,params})
+    organizationInfo.value = res;
+    stacInfoList.value = res.stacMonthList;
   }
   catch (error) {
     console.log(error)
   }
 }
 
-onMounted(async () => {
-  await getStacList()
-})
+onMounted(
+  async () => {
+  await getOrganizationList();
+  await getMonthCommonCode();
+  }
+)
+
 </script>
 
 <template>
@@ -87,65 +197,42 @@ onMounted(async () => {
   </h1>
   <div class="search-box">
     <div class="search-form">
-      <span>
+      <span class = "serach-label">
         회사
       </span>
-      <el-select
-        v-model="searchForm.orgId"
-        class="m-2"
-        placeholder="Select"
-        multiple
-        show-checkbox
-      >
-        <el-option
-          v-for="item in orgList"
-          :key="item.code"
-          :label="item.name"
-          :value="item.code"
+        <el-autocomplete
+            v-model="state"
+            value-key="orgName"
+            :fetch-suggestions="querySearch"
+            clearable
+            class="inline-input w-50"
+            placeholder="회사 선택"
+            @select="handleSelect"
         />
-      </el-select>
-    </div>
-    <div class="search-form">
-      <span>
-        필터
-      </span>
-      <el-select v-model="searchForm.keyWordType" class="m-2" placeholder="Select">
-        <el-option
-          v-for="item in typeList"
-          :key="item.orgId"
-          :label="item.string"
-          :value="item.orgId"
-        />
-      </el-select>
-      <input v-model="searchForm.keyWord" class="form-input">
-    </div>
-    <div class="search-form">
-      <span>
-        결재여부
-      </span>
-      <el-radio-group v-model="searchForm.isPayment">
-        <el-radio :label="1">
-          전체
-        </el-radio>
-        <el-radio :label="2">
-          미결재
-        </el-radio>
-        <el-radio :label="3">
-          결재 완료
-        </el-radio>
-      </el-radio-group>
     </div>
     <div class="last">
       <div class="search-form">
-        <span>조회 기간</span>
+        <span class = "serach-label">조회 기간</span>
         <div class="m-2">
-          <el-date-picker
-            v-model="date"
-            type="daterange"
-            range-separator="~"
-            start-placeholder="시작 시간"
-            end-placeholder="끝 시간"
+          <el-autocomplete
+              v-model="startMonth"
+              value-key="commonName"
+              :fetch-suggestions="monthQuerySearch"
+              clearable
+              class="inline-input w-30"
+              placeholder="시작"
+              @select="startMonthHandleSelect"
           />
+          ~
+          <el-autocomplete
+            v-model="endMonth"
+            value-key="commonName"
+            :fetch-suggestions="monthQuerySearch"
+            clearable
+            class="inline-input w-30"
+            placeholder="끝"
+            @select="endMonthHandleSelect"
+        />
         </div>
       </div>
       <div class="last-button">
@@ -158,34 +245,41 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
   <div>
-    <Swiper
-      :slides-per-view="1"
-      :space-between="50"
-    >
-      <SwiperSlide v-for="(stac, idx) in stacList" :key="idx">
-        <div>
-          <div>
-            <span>{{ stac.orderMonth }}</span>
-            <el-button type="info">
-              결재
-            </el-button>
-          </div>
-          <el-table v-loading="loading" :data="stac.productList" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="40" />
-            <el-table-column prop="orgName" label="회사이름" />
-            <el-table-column prop="prdStyleNo" label="스타일 넘버" />
-            <el-table-column prop="prdItem" label="아이템" />
-            <el-table-column prop="prdSize" label="사이즈" />
-            <el-table-column prop="prdColor" label="색" />
-            <el-table-column prop="prdQty" label="수량" />
-            <el-table-column prop="prdPrc" label="단가" />
-            <el-table-column prop="totalPrdPrc" label="금액" />
-            <el-table-column prop="paymentDate" label="결재 날자" />
+    <div class="table-button">
+      <el-button :type="modeType" @click="changeMode">
+        {{modeNmae}}
+      </el-button>
+    </div>
+    <div class = "stac-box">
+      <div v-for="(stacinfo, idx) in stacInfoList" :key="idx" class = "month-block">
+        <span class = "stac-label">
+          {{stacInfoList[idx].month}}
+        </span>
+        <div class ="stac-table">
+          <el-table v-loading="loading" :data="stacinfo.stacProductList">
+            <el-table-column prop="orderOrderingDate" label="발주일" />
+            <el-table-column prop="productStyleNo" label="styleNo" />
+            <el-table-column prop="productItem" label="item" />
+            <el-table-column prop="productSize" label="size" />
+            <el-table-column prop="productColor" label="color" />
+            <el-table-column prop="productQty" label="qty" />
+            <el-table-column label="비고">
+              <template #default="scope">
+                <el-input v-model="stacinfo.stacProductList[scope.$index].productEtc" :disabled="inputMode"/>
+              </template>
+            </el-table-column>
+            <el-table-column label="개별 단가">
+              <template #default="scope">
+                <el-input v-model="stacinfo.stacProductList[scope.$index].productPrice" :disabled="inputMode"/>
+              </template>
+            </el-table-column>
+            <el-table-column prop="totalPrdPrc" label="총액" />
           </el-table>
         </div>
-      </SwiperSlide>
-    </Swiper>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -227,6 +321,30 @@ onMounted(async () => {
   color: #222;
   caret-color: #5bb870;
   justify-content: space-between;
+}
+.serach-label {
+  margin-right: 5px;
+}
+.table-button {
+  float: right;
+  margin-bottom: 10px;
+}
+.stac-label {
+  margin-bottom : 10px
+}
+.stac-box {
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+}
+.month-block {
+  width: 100%;
+  margin-right: 10px;
+  border: 1px solid #c1c2c3;
+  border-radius: 4px;
+}
+.stac-table {
+  width: 1200px;
 }
 </style>
 
