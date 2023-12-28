@@ -15,7 +15,7 @@ export interface Product {
   productItem: string
   productSize: string
   productColor: string
-  productQty: string
+  productQty: number
   productEtc: string
 }
 

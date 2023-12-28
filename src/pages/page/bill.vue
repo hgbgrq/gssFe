@@ -3,6 +3,8 @@ import { File } from '~/fileList/types'
 
 import type { Organization} from "~/order/types";
 import 'swiper/css';
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
 
 interface ISeachForm {
   orgId: string
@@ -16,8 +18,8 @@ interface IProduct {
   productItem: string
   productSize: string
   productColor: string
-  productQty: string
-  productPrice: string
+  productQty: number
+  productPrice: number
   productEtc: string
   orderOrderingDate: string
   totalPrdPrc: number
@@ -40,6 +42,7 @@ interface IcommonCode {
 
 const searchForm: ISeachForm = reactive({
   orgId: '',
+  year: '',
   startMonth: '',
   endMonth: '',
 })
@@ -50,6 +53,7 @@ const stacInfoList = ref<stacInfo[]>();
 const checkedList = ref<IProduct[]>([])
 const startMonth = ref("")
 const endMonth = ref("")
+const year = ref("")
 const state = ref("");
 const loading = ref(false)
 const inputMode = ref(true)
@@ -58,7 +62,7 @@ const modeType =ref("info")
 let totalCount = ref(0)
 const organizations = ref<Organization[]>([]);
 const monthCommonCodes = ref<IcommonCode[]>([]);
-
+const yearCommonCodes = ref<IcommonCode[]>([]);
 
 
 const search = () => {
@@ -77,14 +81,22 @@ const changeMode = () =>{
   }
 }
 
+const yearQuerySearch = (queryString: string, cb: any) =>{
+  const results = queryString
+    ? yearCommonCodes.value.filter(commonCreateFilter(queryString))
+    : yearCommonCodes.value;
+  cb(results);
+}
+
+
 const monthQuerySearch = (queryString: string, cb: any) =>{
   const results = queryString
-    ? monthCommonCodes.value.filter(monthCreateFilter(queryString))
+    ? monthCommonCodes.value.filter(commonCreateFilter(queryString))
     : monthCommonCodes.value;
   cb(results);
 }
 
-const monthCreateFilter = (queryString: string) => {
+const commonCreateFilter = (queryString: string) => {
   return (commonCode: IcommonCode) => {
     return (
       commonCode.commonName.toLowerCase().indexOf(queryString.toLowerCase()) !==
@@ -123,6 +135,15 @@ const getMonthCommonCode = async () =>{
   try {
     const res = await request('/common-code/month-code', { method: 'GET' })
     monthCommonCodes.value = res.commonCodeList;
+  }catch (error){
+    console.log(error)
+  }
+}
+
+const getYearCommonCode = async () =>{
+  try {
+    const res = await request('/common-code/year-code', { method: 'GET' })
+    yearCommonCodes.value = res.commonCodeList;
   }catch (error){
     console.log(error)
   }
@@ -169,6 +190,10 @@ const handleSelectionChange = (val: IProduct[]) => {
 
 
 const getStacList = async () => {
+  if (isEmpty(year.value)){
+    ElMessageBox.alert('연도 값 기입 필요')
+    return
+  }
   const params = {
   ...searchForm,
   }
@@ -184,8 +209,9 @@ const getStacList = async () => {
 
 onMounted(
   async () => {
-  await getOrganizationList();
-  await getMonthCommonCode();
+    await getOrganizationList();
+    await getMonthCommonCode();
+    await getYearCommonCode();
   }
 )
 
@@ -208,6 +234,20 @@ onMounted(
             class="inline-input w-50"
             placeholder="회사 선택"
             @select="handleSelect"
+        />
+    </div>
+    <div class="search-form">
+      <span class = "serach-label">
+        연도
+      </span>
+        <el-autocomplete
+            v-model="year"
+            value-key="commonName"
+            :fetch-suggestions="yearQuerySearch"
+            clearable
+            class="inline-input w-20"
+            placeholder="년도"
+            @select="yearHandleSelect"
         />
     </div>
     <div class="last">
@@ -338,7 +378,7 @@ onMounted(
   width: 100%;
 }
 .month-block {
-  width: 100%;
+  width: 1250px;
   margin-right: 10px;
   border: 1px solid #c1c2c3;
   border-radius: 4px;

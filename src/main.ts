@@ -6,6 +6,7 @@ import generatedRoutes from '~pages'
 import '@unocss/reset/tailwind.css'
 import 'uno.css'
 import type { UserModule } from '~/types'
+import 'element-plus/dist/index.css'
 
 const routes = setupLayouts(generatedRoutes)
 

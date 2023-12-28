@@ -55,7 +55,7 @@ const onAddItem = () => {
     productItem: "",
     productSize: "",
     productColor: "",
-    productQty: "",
+    productQty: 0,
     productEtc: "",
   });
 };
@@ -74,9 +74,9 @@ const getOrganizationList = async () =>{
 }
 
 const convertDate = (date : Date) =>{
-    const yyyy = date.getFullYear().toString(); // '연도'를 뽑아내고
-    const mm = (date.getMonth()+1).toString(); // '월'을 뽑아내고
-    const dd = date.getDate().toString(); // '일'을 뽑아냅니다
+    const yyyy = date.getFullYear().toString(); 
+    const mm = (date.getMonth()+1).toString(); 
+    const dd = date.getDate().toString(); 
 
     var converDate = '';
     converDate += yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' +(dd[1] ? dd : '0' + dd[0]);
@@ -116,7 +116,7 @@ const Ordering = async () =>{
 }
 onMounted(
   async () => {
-  await getOrganizationList();
+    await getOrganizationList();
   }
 )
 </script>
@@ -174,7 +174,7 @@ onMounted(
         </el-table-column>
         <el-table-column label="Qty" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].productQty" />
+            <el-input v-model="enrollProduct[scope.$index].productQty" type = "number" />
           </template>
         </el-table-column>
         <el-table-column label="Etc" width="150">
@@ -209,7 +209,6 @@ onMounted(
         추가
       </el-button>
     </div>
-
     <el-button class="mt-4" style="width: 50%" @click="Ordering">
       발주
     </el-button>
