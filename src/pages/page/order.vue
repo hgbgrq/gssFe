@@ -75,7 +75,8 @@ const downloadFile = async (row: number) => {
   try {
     console.log(row)
     console.log(orderList.value[row].orderId)
-    await downloadExcelFile(`/order/downloadExcel/${orderList.value[row].orderId}`, { method: 'GET' })
+    const orderId = orderList.value[row].orderId
+    await downloadExcelFile(`/order/downloadExcel/${orderId}`, { method: 'GET' })
   }
   catch (error) {
     console.error(error)
