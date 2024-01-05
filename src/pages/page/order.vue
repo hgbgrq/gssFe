@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Organization, Order } from "~/order/types";
+import type { Order, Organization } from '~/order/types'
 
 const router = useRouter()
 
-const organizations = ref<Organization[]>([]);
-const state = ref("");
+const organizations = ref<Organization[]>([])
+const state = ref('')
 const startDate = ref()
 const endDate = ref()
 const orderList = ref<Order[]>([])
 let totalCount = ref(0)
-let loading = ref(false)
+const loading = ref(false)
 const checkedList = ref<Order[]>([])
 
 const searchForm = {
@@ -23,18 +23,17 @@ const searchForm = {
 const getOrderList = async () => {
   searchForm.startDate = ''
   searchForm.endDate = ''
-  if (startDate.value){
+  if (startDate.value)
     searchForm.startDate = dateFormat(startDate.value)
-  }
-  if (endDate.value){
+
+  if (endDate.value)
     searchForm.endDate = dateFormat(endDate.value)
-  }
-  try { 
+
+  try {
     const params = {
       ...searchForm,
     }
     const res = await request('/order', { method: 'GET', params })
-    console.log(res)
     orderList.value = res.list
     totalCount = res.totalCount
   }
@@ -43,19 +42,29 @@ const getOrderList = async () => {
   }
 }
 
-const getOrganizationList = async () =>{
-
+const getOrganizationList = async () => {
   try {
     const res = await request('/org', { method: 'GET' })
-    organizations.value = res.list;
-  }catch (error){
+    organizations.value = res.list
+  }
+  catch (error) {
     console.log(error)
   }
-
 }
 
-const deleteOrder = () => {
+const deleteOrder = async () => {
+  const data = {
+    orderList: checkedList.value,
+  }
 
+  try {
+    const res = await request('/order/remove', { method: 'POST', data })
+    if (res.code === '200')
+      getOrderList()
+  }
+  catch (error) {
+    console.log(error)
+  }
 }
 
 const handleSelectionChange = (val: Order[]) => {
@@ -71,25 +80,24 @@ const downloadFile = async (row: number) => {
   }
 }
 
-const querySearch = (queryString: string, cb: any) => {
-  const results = queryString
-    ? organizations.value.filter(createFilter(queryString))
-    : organizations.value;
-  cb(results);
-};
-
 const createFilter = (queryString: string) => {
   return (organization: Organization) => {
     return (
-      organization.orgName.toLowerCase().indexOf(queryString.toLowerCase()) !==
-      -1
-    );
-  };
-};
+      organization.orgName.toLowerCase().includes(queryString.toLowerCase())
+    )
+  }
+}
+
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? organizations.value.filter(createFilter(queryString))
+    : organizations.value
+  cb(results)
+}
 
 const handleSelect = (item: Organization) => {
   searchForm.orgId = item.orgId
-};
+}
 
 const moveEnrollPage = () => {
   router.push('/page/enrollOrder')
@@ -105,19 +113,22 @@ const handleCurrentChange = (page: number) => {
 onMounted(
   async () => {
     await getOrderList()
-    await getOrganizationList();
-  }
+    await getOrganizationList()
+  },
 )
-
 </script>
 
 <template>
-  <h1 class="title">발주서 관리</h1>
+  <h1 class="title">
+    발주서 관리
+  </h1>
 
   <div class="search">
     <div class="search-form">
       <div class="search-type">
-        <div class="search-label">회사</div>
+        <div class="search-label">
+          회사
+        </div>
         <div class="search-box">
           <el-autocomplete
             v-model="state"
@@ -132,7 +143,9 @@ onMounted(
       </div>
 
       <div class="search-type">
-        <div class="search-label">발주일</div>
+        <div class="search-label">
+          발주일
+        </div>
         <div class="search-box">
           <el-date-picker
             v-model="startDate"
@@ -148,20 +161,26 @@ onMounted(
     </div>
 
     <div class="search-button">
-      <el-button type="info" @click="getOrderList"> 조회 </el-button>
+      <el-button type="info" @click="getOrderList">
+        조회
+      </el-button>
     </div>
   </div>
 
   <div class="grid-header">
     <div />
     <div class="button-location">
-      <el-button type="danger" @click="deleteOrder"> 삭제 </el-button>
-      <el-button type="primary" @click="moveEnrollPage"> 등록 </el-button>
+      <el-button type="danger" @click="deleteOrder">
+        삭제
+      </el-button>
+      <el-button type="primary" @click="moveEnrollPage">
+        등록
+      </el-button>
     </div>
   </div>
 
   <div>
-    <div class ="order-table">
+    <div class="order-table">
       <el-table v-loading="loading" :data="orderList" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="40" />
         <el-table-column prop="orgName" label="회사" />
@@ -183,7 +202,6 @@ onMounted(
     </div>
     <el-pagination layout="prev, pager, next" :total="totalCount" @current-change="handleCurrentChange" />
   </div>
-  
 </template>
 
 <style scoped>

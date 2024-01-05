@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { File } from '~/fileList/types'
-
-import type { Organization} from "~/order/types";
-import 'swiper/css';
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { Action } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
+import type { Organization } from '~/order/types'
+import 'swiper/css'
 
 interface ISeachForm {
   orgId: string
   startMonth: string
   endMonth: string
+  year: string
 }
 interface IProduct {
   orderId: string
@@ -47,174 +45,177 @@ const searchForm: ISeachForm = reactive({
   endMonth: '',
 })
 
-
-const organizationInfo = ref<IOrganizationInfo>();
-const stacInfoList = ref<stacInfo[]>();
+const organizationInfo = ref<IOrganizationInfo>()
+const stacInfoList = ref<stacInfo[]>()
 const checkedList = ref<IProduct[]>([])
-const startMonth = ref("")
-const endMonth = ref("")
-const year = ref("")
-const state = ref("");
+const startMonth = ref('')
+const endMonth = ref('')
+const year = ref('')
+const state = ref('')
 const loading = ref(false)
 const inputMode = ref(true)
-const modeNmae = ref("단가 입력")
-const modeType =ref("info")
-let totalCount = ref(0)
-const organizations = ref<Organization[]>([]);
-const monthCommonCodes = ref<IcommonCode[]>([]);
-const yearCommonCodes = ref<IcommonCode[]>([]);
+const modeNmae = ref('단가 입력')
+const modeType = ref('info')
+const totalCount = ref(0)
+const organizations = ref<Organization[]>([])
+const monthCommonCodes = ref<IcommonCode[]>([])
+const yearCommonCodes = ref<IcommonCode[]>([])
 
-
-const search = () => {
-  console.log(searchForm)
-}
-
-const changeMode = () =>{
-  if (inputMode.value){
-    inputMode.value = false;
-    modeType.value = "primary";
+const getStacList = async () => {
+  if (year.value === '') {
+    ElMessageBox.alert('연도 값 기입 필요')
+    return
   }
-  else{
-    modifyPrice();
-    inputMode.value = true;
-    modeType.value = "info";
+
+  if (startMonth.value === '')
+    searchForm.startMonth = ''
+
+  if (endMonth.value === '')
+    searchForm.endMonth = ''
+
+  const params = {
+    ...searchForm,
+  }
+
+  try {
+    const res = await request('/stac', { method: 'GET', params })
+    organizationInfo.value = res
+    stacInfoList.value = res.stacMonthList
+  }
+  catch (error) {
+    console.log(error)
   }
 }
-
-const yearQuerySearch = (queryString: string, cb: any) =>{
-  const results = queryString
-    ? yearCommonCodes.value.filter(commonCreateFilter(queryString))
-    : yearCommonCodes.value;
-  cb(results);
-}
-
-
-const monthQuerySearch = (queryString: string, cb: any) =>{
-  const results = queryString
-    ? monthCommonCodes.value.filter(commonCreateFilter(queryString))
-    : monthCommonCodes.value;
-  cb(results);
-}
-
 const commonCreateFilter = (queryString: string) => {
   return (commonCode: IcommonCode) => {
     return (
-      commonCode.commonName.toLowerCase().indexOf(queryString.toLowerCase()) !==
-      -1
-    );
-  };
-};
+      commonCode.commonName.toLowerCase().includes(queryString.toLowerCase())
+    )
+  }
+}
 
-const querySearch = (queryString: string, cb: any) => {
+const yearQuerySearch = (queryString: string, cb: any) => {
   const results = queryString
-    ? organizations.value.filter(createFilter(queryString))
-    : organizations.value;
-  cb(results);
-};
+    ? yearCommonCodes.value.filter(commonCreateFilter(queryString))
+    : yearCommonCodes.value
+  cb(results)
+}
+
+const monthQuerySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? monthCommonCodes.value.filter(commonCreateFilter(queryString))
+    : monthCommonCodes.value
+  cb(results)
+}
 
 const createFilter = (queryString: string) => {
   return (organization: Organization) => {
     return (
-      organization.orgName.toLowerCase().indexOf(queryString.toLowerCase()) !==
-      -1
-    );
-  };
-};
+      organization.orgName.toLowerCase().includes(queryString.toLowerCase())
+    )
+  }
+}
 
-const getOrganizationList = async () =>{
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? organizations.value.filter(createFilter(queryString))
+    : organizations.value
+  cb(results)
+}
 
+const getOrganizationList = async () => {
   try {
     const res = await request('/org', { method: 'GET' })
-    organizations.value = res.list;
-  }catch (error){
-    console.log(error)
-  }
-}
-
-const getMonthCommonCode = async () =>{
-  try {
-    const res = await request('/common-code/month-code', { method: 'GET' })
-    monthCommonCodes.value = res.commonCodeList;
-  }catch (error){
-    console.log(error)
-  }
-}
-
-const getYearCommonCode = async () =>{
-  try {
-    const res = await request('/common-code/year-code', { method: 'GET' })
-    yearCommonCodes.value = res.commonCodeList;
-  }catch (error){
-    console.log(error)
-  }
-}
-
-const modifyPrice = async() =>{
-
-  const data = {
-    stacProductReqList: stacInfoList.value
-  }
-  try {
-    const res = await request('/stac', { method: 'POST', data })
-    console.log(res)
-    if(res.code ==='200'){
-      getStacList();
-    }
-  }catch (error) {
-    console.log(error)
-  }
-
-}
-
-const handleSelect = (item: Organization) => { 
-  searchForm.orgId = JSON.parse(
-    JSON.stringify(item.orgId)
-  );
-};
-
-const startMonthHandleSelect = (item: IcommonCode) =>{
-  searchForm.startMonth = JSON.parse(
-    JSON.stringify(item.commonId)
-  );
-}
-
-const endMonthHandleSelect = (item: IcommonCode) =>{
-  searchForm.endMonth = JSON.parse(
-    JSON.stringify(item.commonId)
-  );
-}
-
-const handleSelectionChange = (val: IProduct[]) => {
-  checkedList.value = val
-}
-
-
-const getStacList = async () => {
-  if (isEmpty(year.value)){
-    ElMessageBox.alert('연도 값 기입 필요')
-    return
-  }
-  const params = {
-  ...searchForm,
-  }
-  try {
-    const res = await request('/stac', { method: 'GET' ,params})
-    organizationInfo.value = res;
-    stacInfoList.value = res.stacMonthList;
+    organizations.value = res.list
   }
   catch (error) {
     console.log(error)
   }
 }
 
+const getMonthCommonCode = async () => {
+  try {
+    const res = await request('/common-code/month-code', { method: 'GET' })
+    monthCommonCodes.value = res.commonCodeList
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const getYearCommonCode = async () => {
+  try {
+    const res = await request('/common-code/year-code', { method: 'GET' })
+    yearCommonCodes.value = res.commonCodeList
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const modifyPrice = async () => {
+  const data = {
+    stacProductReqList: stacInfoList.value,
+  }
+
+  try {
+    const res = await request('/stac', { method: 'POST', data })
+    console.log(res)
+    if (res.code === '200')
+      getStacList()
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const handleSelect = (item: Organization) => {
+  searchForm.orgId = JSON.parse(
+    JSON.stringify(item.orgId),
+  )
+}
+
+const startMonthHandleSelect = (item: IcommonCode) => {
+  searchForm.startMonth = JSON.parse(
+    JSON.stringify(item.commonId),
+  )
+}
+
+const endMonthHandleSelect = (item: IcommonCode) => {
+  searchForm.endMonth = JSON.parse(
+    JSON.stringify(item.commonId),
+  )
+}
+
+const yearHandleSelect = (item: IcommonCode) => {
+  searchForm.year = JSON.parse(
+    JSON.stringify(item.commonId),
+  )
+}
+
+const handleSelectionChange = (val: IProduct[]) => {
+  checkedList.value = val
+}
+
+const changeMode = () => {
+  if (inputMode.value) {
+    inputMode.value = false
+    modeType.value = 'primary'
+  }
+  else {
+    modifyPrice()
+    inputMode.value = true
+    modeType.value = 'info'
+  }
+}
+
 onMounted(
   async () => {
-    await getOrganizationList();
-    await getMonthCommonCode();
-    await getYearCommonCode();
-  }
+    await getOrganizationList()
+    await getMonthCommonCode()
+    await getYearCommonCode()
+  },
 )
-
 </script>
 
 <template>
@@ -223,45 +224,45 @@ onMounted(
   </h1>
   <div class="search-box">
     <div class="search-form">
-      <span class = "serach-label">
+      <span class="serach-label">
         회사
       </span>
-        <el-autocomplete
-            v-model="state"
-            value-key="orgName"
-            :fetch-suggestions="querySearch"
-            clearable
-            class="inline-input w-50"
-            placeholder="회사 선택"
-            @select="handleSelect"
-        />
+      <el-autocomplete
+        v-model="state"
+        value-key="orgName"
+        :fetch-suggestions="querySearch"
+        clearable
+        class="inline-input w-50"
+        placeholder="회사 선택"
+        @select="handleSelect"
+      />
     </div>
     <div class="search-form">
-      <span class = "serach-label">
+      <span class="serach-label">
         연도
       </span>
-        <el-autocomplete
-            v-model="year"
-            value-key="commonName"
-            :fetch-suggestions="yearQuerySearch"
-            clearable
-            class="inline-input w-20"
-            placeholder="년도"
-            @select="yearHandleSelect"
-        />
+      <el-autocomplete
+        v-model="year"
+        value-key="commonName"
+        :fetch-suggestions="yearQuerySearch"
+        clearable
+        class="inline-input w-20"
+        placeholder="년도"
+        @select="yearHandleSelect"
+      />
     </div>
     <div class="last">
       <div class="search-form">
-        <span class = "serach-label">조회 기간</span>
+        <span class="serach-label">조회 기간</span>
         <div class="m-2">
           <el-autocomplete
-              v-model="startMonth"
-              value-key="commonName"
-              :fetch-suggestions="monthQuerySearch"
-              clearable
-              class="inline-input w-30"
-              placeholder="시작"
-              @select="startMonthHandleSelect"
+            v-model="startMonth"
+            value-key="commonName"
+            :fetch-suggestions="monthQuerySearch"
+            clearable
+            class="inline-input w-30"
+            placeholder="시작"
+            @select="startMonthHandleSelect"
           />
           ~
           <el-autocomplete
@@ -272,7 +273,7 @@ onMounted(
             class="inline-input w-30"
             placeholder="끝"
             @select="endMonthHandleSelect"
-        />
+          />
         </div>
       </div>
       <div class="last-button">
@@ -289,17 +290,18 @@ onMounted(
   <div>
     <div class="table-button">
       <el-button :type="modeType" @click="changeMode">
-        {{modeNmae}}
+        {{ modeNmae }}
       </el-button>
     </div>
-    <div class = "stac-box">
-      <div v-for="(stacinfo, idx) in stacInfoList" :key="idx" class = "month-block">
-        <span class = "stac-label">
-          {{stacInfoList[idx].month}}
+    <div class="stac-box">
+      <div v-for="(stacinfo, idx) in stacInfoList" :key="idx" class="month-block">
+        <span class="stac-label">
+          {{ stacInfoList[idx].month }}
         </span>
-        <div class ="stac-table">
+        <div class="stac-table">
           <el-table v-loading="loading" :data="stacinfo.stacProductList">
             <el-table-column prop="orderOrderingDate" label="발주일" />
+            <el-table-column prop="orderDeadLineDate" label="납기일" />
             <el-table-column prop="productStyleNo" label="styleNo" />
             <el-table-column prop="productItem" label="item" />
             <el-table-column prop="productSize" label="size" />
@@ -307,12 +309,12 @@ onMounted(
             <el-table-column prop="productQty" label="qty" />
             <el-table-column label="비고">
               <template #default="scope">
-                <el-input v-model="stacinfo.stacProductList[scope.$index].productEtc" :disabled="inputMode"/>
+                <el-input v-model="stacinfo.stacProductList[scope.$index].productEtc" :disabled="inputMode" />
               </template>
             </el-table-column>
             <el-table-column label="개별 단가">
               <template #default="scope">
-                <el-input v-model="stacinfo.stacProductList[scope.$index].productPrice" :disabled="inputMode"/>
+                <el-input v-model="stacinfo.stacProductList[scope.$index].productPrice" :disabled="inputMode" />
               </template>
             </el-table-column>
             <el-table-column prop="totalPrdPrc" label="총액" />

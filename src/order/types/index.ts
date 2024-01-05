@@ -1,9 +1,9 @@
 export interface Organization {
-    orgId: string
-    orgName: string
+  orgId: string
+  orgName: string
 }
 
-export interface Order{
+export interface Order {
   orderId: string
   orgName: string
   orderOrderingDate: string
@@ -19,7 +19,7 @@ export interface Product {
   productEtc: string
 }
 
-export interface Ordering {
+export interface OrderingInfo {
   orderOrderingDate: string
   orderDeadLineDate: string
   orgId: string

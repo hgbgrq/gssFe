@@ -118,4 +118,20 @@ export default defineConfig({
       },
     },
   },
+
+  // https://github.com/antfu/vite-ssg
+  ssgOptions: {
+    script: 'async',
+  },
+
+  ssr: {
+    // TODO: workaround until they support native ESM
+    noExternal: ['workbox-window', /vue-i18n/, /element-plus/],
+  },
+
+  build: {
+    commonjsOptions: {
+      include: /node_modules/,
+    },
+  },
 })

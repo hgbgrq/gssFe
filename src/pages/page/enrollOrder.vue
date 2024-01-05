@@ -1,128 +1,124 @@
 <script setup lang="ts">
-import type { Organization, Product, Ordering } from "~/order/types";
+import type { OrderingInfo, Organization, Product } from '~/order/types'
 
-const organizations = ref<Organization[]>([]);
-const enrollProduct = ref<Product[]>([]);
-const orderate = ref();
-const deadLineDate = ref();
-const oroderName = ref("");
-const selectedOrg = ref("");
-const state = ref("");
-const enrollOrderData = reactive<Ordering>({
+const router = useRouter()
+
+const organizations = ref<Organization[]>([])
+const enrollProduct = ref<Product[]>([])
+const orderDate = ref()
+const deadLineDate = ref()
+const selectedOrg = ref('')
+const state = ref('')
+const enrollOrderData = reactive<OrderingInfo>({
   orgId: selectedOrg.value,
-  orderOrderingDate: orderate.value,
+  orderOrderingDate: orderDate.value,
   orderDeadLineDate: deadLineDate.value,
-  productList: enrollProduct.value
-});
-let loading = ref(false)
-
-const querySearch = (queryString: string, cb: any) => {
-  const results = queryString
-    ? organizations.value.filter(createFilter(queryString))
-    : organizations.value;
-  cb(results);
-};
+  productList: enrollProduct.value,
+})
+const loading = ref(false)
 
 const createFilter = (queryString: string) => {
   return (organization: Organization) => {
     return (
-      organization.orgName.toLowerCase().indexOf(queryString.toLowerCase()) !==
-      -1
-    );
-  };
-};
+      organization.orgName.toLowerCase().includes(queryString.toLowerCase())
+    )
+  }
+}
+
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? organizations.value.filter(createFilter(queryString))
+    : organizations.value
+  cb(results)
+}
 
 const deleteRow = (index: number) => {
-  enrollProduct.value.splice(index, 1);
-};
+  enrollProduct.value.splice(index, 1)
+}
 
 const copyCell = (index: number) => {
   enrollProduct.value[index] = JSON.parse(
-    JSON.stringify(enrollProduct.value[index - 1])
-  );
-};
+    JSON.stringify(enrollProduct.value[index - 1]),
+  )
+}
 
 const handleSelect = (item: Organization) => {
-  console.log(item);
   selectedOrg.value = JSON.parse(
-    JSON.stringify(item.orgId)
-  );
-};
+    JSON.stringify(item.orgId),
+  )
+}
 
 const onAddItem = () => {
   enrollProduct.value.push({
-    productStyleNo: "",
-    productItem: "",
-    productSize: "",
-    productColor: "",
+    productStyleNo: '',
+    productItem: '',
+    productSize: '',
+    productColor: '',
     productQty: 0,
-    productEtc: "",
-  });
-};
+    productEtc: '',
+  })
+}
 
-
-
-const getOrganizationList = async () =>{
-
+const getOrganizationList = async () => {
   try {
     const res = await request('/org', { method: 'GET' })
-    console.log(res)
-    organizations.value = res.list;
-  }catch (error){
+    organizations.value = res.list
+  }
+  catch (error) {
     console.log(error)
   }
 }
 
-const convertDate = (date : Date) =>{
-    const yyyy = date.getFullYear().toString(); 
-    const mm = (date.getMonth()+1).toString(); 
-    const dd = date.getDate().toString(); 
+const convertDate = (date: Date) => {
+  const yyyy = date.getFullYear().toString()
+  const mm = (date.getMonth() + 1).toString()
+  const dd = date.getDate().toString()
 
-    var converDate = '';
-    converDate += yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' +(dd[1] ? dd : '0' + dd[0]);
-    
-    return converDate
+  let converDate = ''
+  converDate += `${yyyy}-${mm[1] ? mm : `0${mm[0]}`}-${dd[1] ? dd : `0${dd[0]}`}`
 
+  return converDate
 }
 
-const Ordering = async () =>{
+const Ordering = async () => {
+  loading.value = true
+  enrollOrderData.orgId = selectedOrg.value
+  enrollOrderData.orderOrderingDate = convertDate(orderDate.value)
+  enrollOrderData.orderDeadLineDate = convertDate(deadLineDate.value)
 
-    loading.value = true
-    enrollOrderData.orgId = selectedOrg.value
-    enrollOrderData.orderOrderingDate = convertDate(orderate.value)
-    enrollOrderData.orderDeadLineDate = convertDate(deadLineDate.value)
+  const orderId = ref()
+  const data = {
+    ...enrollOrderData,
+  }
 
-    const orderId = ref();
-    const data = {
-        ...enrollOrderData,
-    }
-
-    try {
-        const res = await request('/order', { method: 'POST', data })
-        orderId.value = res.orderId
-    }catch (error){
+  try {
+    const res = await request('/order', { method: 'POST', data })
+    orderId.value = res.orderId
+  }
+  catch (error) {
     console.log(error)
-    }
+  }
 
-    try {
-        await downloadExcelFile(`/order/downloadExcel/${orderId.value}`, { method: 'GET' })
-    }catch (error){
+  try {
+    await downloadExcelFile(`/order/downloadExcel/${orderId.value}`, { method: 'GET' })
+  }
+  catch (error) {
     console.log(error)
-    }
-
-    loading.value = false
-
-
+  }
+  router.push('/page/order')
+  loading.value = false
 }
 onMounted(
   async () => {
-    await getOrganizationList();
-  }
+    await getOrganizationList()
+  },
 )
 </script>
 
 <template>
-  <h1 class="title">발주등록</h1>
+  <h1 class="title">
+    발주등록
+  </h1>
 
   <div>
     <div class="search-box">
@@ -142,7 +138,7 @@ onMounted(
       </div>
       <div class="search-form">
         <span class="serach-label"> 발주일 </span>
-        <el-date-picker v-model="orderate" type="date" />
+        <el-date-picker v-model="orderDate" type="date" />
       </div>
       <div class="search-form">
         <span class="serach-label"> 납기일 </span>
@@ -174,7 +170,7 @@ onMounted(
         </el-table-column>
         <el-table-column label="Qty" width="150">
           <template #default="scope">
-            <el-input v-model="enrollProduct[scope.$index].productQty" type = "number" />
+            <el-input v-model="enrollProduct[scope.$index].productQty" type="number" />
           </template>
         </el-table-column>
         <el-table-column label="Etc" width="150">
@@ -200,8 +196,7 @@ onMounted(
               type="primary"
               size="small"
               @click.prevent="copyCell(scope.$index)"
-            >
-            </el-button>
+            />
           </template>
         </el-table-column>
       </el-table>
