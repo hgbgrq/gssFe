@@ -57,6 +57,7 @@ export const downloadExcelFile = async (url: string, options: DownReqOptions) =>
     const paramsStr = Object.keys(params).map(key => `${key}=${params[key]}`).join('&')
     url = `${url}?${paramsStr}`
   }
+  console.log(url)
   const response = await fetch(url, reqObj)
   try {
     if (response.ok) {
