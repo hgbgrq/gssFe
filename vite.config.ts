@@ -26,13 +26,11 @@ export default defineConfig({
    * 로컬 환경에서 개발 진행 시, 사용하는 접속 정보 입니다.
    */
   server: {
-    /* 모바일 화면 확인용 스트립트입니다. */
     host: true, // Host be set to true to use the network form to access project with ip
     port: 3333, // port number
     open: true, // Open browser automatically
     cors: true, // cross-domain setting permission
     strictPort: true, // If the port is occupied, exit directly
-    /* 모바일 화면 확인용 스트립트입니다. */
     proxy: {
       '/api': {
         // target: 'http://ec2-15-164-222-108.ap-northeast-2.compute.amazonaws.com:9000',

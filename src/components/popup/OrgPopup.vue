@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { VueDaumPostcodeCompleteResult } from 'vue-daum-postcode'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Popup } from '~/components/types/popup'
-import DaumPostPopup from '~/components/popup/DaumPostPopup.vue'
 import type { Org } from '~/admin/companyManagement/types'
 import { isEmpty } from '~/composables/utils'
 
@@ -39,11 +37,7 @@ const org = reactive<Org>({
 const postPopup = ref(false)
 const checkOrgName = ref(false)
 
-const complete = (newResult: VueDaumPostcodeCompleteResult) => {
-  postPopup.value = false
-  org.orgZoneCode = newResult.zonecode
-  org.orgAddress = `${newResult.address}(${newResult.buildingName})`
-  console.log(newResult)
+const complete = () => {
 }
 const DaumPostPopupOpen = () => {
   postPopup.value = true
@@ -222,13 +216,7 @@ onMounted(async () => {
         </label>
         <input v-model="org.orgAddressDetail" type="text" class="input-2">
       </div>
-      <div>
-        <DaumPostPopup
-          v-if="postPopup"
-          @complete="complete"
-          @close="closePost"
-        />
-      </div>
+      <div />
     </div>
     <template #footer>
       <div class="footer">
