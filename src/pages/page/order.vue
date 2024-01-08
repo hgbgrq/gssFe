@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { Download, Edit } from '@element-plus/icons-vue'
 import type { Order, Organization } from '~/order/types'
+import OrderPopup from '~/components/popup/OrderPopup.vue'
 
 const router = useRouter()
 
@@ -20,6 +22,11 @@ const searchForm = {
   pageSize: 10,
 }
 
+const popup: OrderPopup = reactive({
+  show: false,
+  orderId: '',
+})
+
 const getOrderList = async () => {
   searchForm.startDate = ''
   searchForm.endDate = ''
@@ -28,6 +35,9 @@ const getOrderList = async () => {
 
   if (endDate.value)
     searchForm.endDate = dateFormat(endDate.value)
+
+  if (!state.value)
+    searchForm.orgId = ''
 
   try {
     const params = {
@@ -73,15 +83,17 @@ const handleSelectionChange = (val: Order[]) => {
 
 const downloadFile = async (row: number) => {
   try {
-    console.log(row)
-    console.log(orderList.value[row].orderId)
     const orderId = orderList.value[row].orderId
-    console.log(`/order/downloadExcel/${orderId}`)
     await downloadExcelFile(`/order/downloadExcel/${orderId}`, { method: 'GET' })
   }
   catch (error) {
     console.error(error)
   }
+}
+
+const editOrder = (row: number) => {
+  popup.orderId = orderList.value[row].orderId
+  popup.show = true
 }
 
 const createFilter = (queryString: string) => {
@@ -112,6 +124,18 @@ const handleCurrentChange = (page: number) => {
   searchForm.currentPage = page - 1
   getOrderList()
   loading.value = false
+}
+
+const closePopup = () => {
+  popup.show = false
+}
+
+const reload = () => {
+  getOrderList()
+}
+
+const openDetail = () => {
+  console.log('클릭함')
 }
 
 onMounted(
@@ -187,24 +211,45 @@ onMounted(
     <div class="order-table">
       <el-table v-loading="loading" :data="orderList" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="40" />
-        <el-table-column prop="orgName" label="회사" />
+        <el-table-column prop="orgName" label="회사" @click="openDetail" />
         <el-table-column prop="orderStyleNos" label="styleNo" />
         <el-table-column prop="orderOrderingDate" label="발주일" />
-        <el-table-column label="파일 다운로드" width="120">
+        <el-table-column prop="orderDeadLineDate" label="납기일" />
+        <el-table-column label="" width="120">
           <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click.prevent="editOrder(scope.$index)"
+            >
+              <el-icon :size="20">
+                <Edit />
+              </el-icon>
+            </el-button>
             <el-button
               link
               type="primary"
               size="small"
               @click.prevent="downloadFile(scope.$index)"
             >
-              Download
+              <el-icon :size="20">
+                <Download />
+              </el-icon>
             </el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <el-pagination layout="prev, pager, next" :total="totalCount" @current-change="handleCurrentChange" />
+    <div>
+      <OrderPopup
+        v-if="popup.show"
+        :order-id="popup.orderId"
+        @close="closePopup"
+        @reload="reload"
+      />
+    </div>
   </div>
 </template>
 

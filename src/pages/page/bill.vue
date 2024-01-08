@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumnCtx } from 'element-plus'
 import { ElMessageBox } from 'element-plus'
 import type { Organization } from '~/order/types'
 import 'swiper/css'
@@ -208,6 +209,36 @@ const changeMode = () => {
     modeType.value = 'info'
   }
 }
+interface SummaryMethodProps<T = IProduct> {
+  columns: TableColumnCtx<T>[]
+  data: T[]
+}
+const getSummaries = (param: SummaryMethodProps) => {
+  const { columns, data } = param
+  const sums: string[] = []
+  columns.forEach((column, index) => {
+    if (index === 0) {
+      sums[index] = '총액'
+      return
+    }
+    if (column.property === 'totalPrdPrc') {
+      const values = data.map(item => Number(item[column.property]))
+      const cost = values.reduce((prev, curr) => {
+        const value = Number(curr)
+        if (!Number.isNaN(value))
+          return prev + curr
+        else
+          return prev
+      }, 0)
+      const result = cost.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+      sums[index] = `${result} 원 `
+    }
+    else {
+      sums[index] = ''
+    }
+  })
+  return sums
+}
 
 onMounted(
   async () => {
@@ -299,7 +330,7 @@ onMounted(
           {{ stacInfoList[idx].month }}
         </span>
         <div class="stac-table">
-          <el-table v-loading="loading" :data="stacinfo.stacProductList">
+          <el-table v-loading="loading" :data="stacinfo.stacProductList" :summary-method="getSummaries" show-summary>
             <el-table-column prop="orderOrderingDate" label="발주일" />
             <el-table-column prop="orderDeadLineDate" label="납기일" />
             <el-table-column prop="productStyleNo" label="styleNo" />

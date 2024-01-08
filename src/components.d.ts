@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     PopupFileUploadPopup: typeof import('./components/popup/FileUploadPopup.vue')['default']
+    PopupOrderPopup: typeof import('./components/popup/OrderPopup.vue')['default']
     PopupOrgPopup: typeof import('./components/popup/OrgPopup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

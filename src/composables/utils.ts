@@ -77,9 +77,6 @@ export const downloadExcelFile = async (url: string, options: DownReqOptions) =>
       // 3. 추출한 fileName 디코딩
       fileName = decodeURI(fileName)
 
-      console.log(fileName)
-      console.log(blob)
-
       // 4. 가상의 a 태그 생성
       const link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)

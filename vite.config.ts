@@ -33,8 +33,8 @@ export default defineConfig({
     strictPort: true, // If the port is occupied, exit directly
     proxy: {
       '/api': {
-        // target: 'http://ec2-15-164-222-108.ap-northeast-2.compute.amazonaws.com:9000',
-        target: 'http://hgbgrq.iptime.org:9000',
+        // target: 'http://hgbgrq.iptime.org:9000',
+        target: 'http://localhost:9000',
         changeOrigin: true,
       },
     },

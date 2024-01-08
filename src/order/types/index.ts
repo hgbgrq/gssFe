@@ -7,6 +7,7 @@ export interface Order {
   orderId: string
   orgName: string
   orderOrderingDate: string
+  orderDeadLineDate: string
   orderStyleNos: string
 }
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import type { OrderingInfo, Organization, Product } from '~/order/types'
 
 const router = useRouter()
@@ -81,6 +82,10 @@ const convertDate = (date: Date) => {
 }
 
 const Ordering = async () => {
+  if (!enrollOrderData.orgId) {
+    ElMessageBox.alert('회사를 선택하세요')
+    return
+  }
   loading.value = true
   enrollOrderData.orgId = selectedOrg.value
   enrollOrderData.orderOrderingDate = convertDate(orderDate.value)
