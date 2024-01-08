@@ -82,7 +82,8 @@ const convertDate = (date: Date) => {
 }
 
 const Ordering = async () => {
-  if (!enrollOrderData.orgId) {
+  console.log()
+  if (!selectedOrg.value) {
     ElMessageBox.alert('회사를 선택하세요')
     return
   }
