@@ -22,6 +22,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /gss/frontEnd/gssFe
+            git pull
             docker build -t gss_front ./
             docker rm -f gss_front
             docker run -d -p 3333:3333 --name gss_front gss_front
