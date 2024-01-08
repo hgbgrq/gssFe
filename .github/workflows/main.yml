@@ -1,1 +1,27 @@
+name: vue CICD
 
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: gss-deploy
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /gss/frontEnd/gssFe
+            docker build -t gss_front ./
+            docker rm -f gss_front
+            docker run -d -p 3333:3333 --name gss_front gss_front
