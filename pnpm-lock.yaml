@@ -23,6 +23,9 @@ dependencies:
   crypto-js:
     specifier: ^4.1.1
     version: 4.2.0
+  dayjs:
+    specifier: ^1.11.10
+    version: 1.11.10
   echarts:
     specifier: ^5.4.1
     version: 5.4.3
