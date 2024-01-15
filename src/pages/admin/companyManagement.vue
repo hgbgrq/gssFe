@@ -32,6 +32,7 @@ const getOrgList = async () => {
       ...searchForm,
     }
     const res = await request('/org', { method: 'GET', params })
+    console.log(res)
     orgList.value = res.list
   }
   catch (error) {

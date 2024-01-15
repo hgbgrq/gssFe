@@ -2,6 +2,7 @@
 import { Download, Edit } from '@element-plus/icons-vue'
 import type { Order, Organization } from '~/order/types'
 import OrderPopup from '~/components/popup/OrderPopup.vue'
+import FileUploadPopup from '~/components/popup/FileUploadPopup.vue'
 
 const router = useRouter()
 
@@ -25,6 +26,10 @@ const searchForm = {
 const popup: OrderPopup = reactive({
   show: false,
   orderId: '',
+})
+
+const filePopup: FileUploadPopup = reactive({
+  show: false,
 })
 
 const getOrderList = async () => {
@@ -119,6 +124,10 @@ const moveEnrollPage = () => {
   router.push('/page/enrollOrder')
 }
 
+const fileUpload = () => {
+  filePopup.show = true
+}
+
 const handleCurrentChange = (page: number) => {
   loading.value = true
   searchForm.currentPage = page - 1
@@ -130,6 +139,9 @@ const closePopup = () => {
   popup.show = false
 }
 
+const closeFilePopup = () => {
+  filePopup.show = false
+}
 const reload = () => {
   getOrderList()
 }
@@ -204,6 +216,9 @@ onMounted(
       <el-button type="primary" @click="moveEnrollPage">
         등록
       </el-button>
+      <el-button type="primary" @click="fileUpload">
+        파일 등록
+      </el-button>
     </div>
   </div>
 
@@ -247,6 +262,13 @@ onMounted(
         v-if="popup.show"
         :order-id="popup.orderId"
         @close="closePopup"
+        @reload="reload"
+      />
+    </div>
+    <div>
+      <FileUploadPopup
+        v-if="filePopup.show"
+        @close="closeFilePopup"
         @reload="reload"
       />
     </div>

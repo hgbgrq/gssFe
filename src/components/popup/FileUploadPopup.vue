@@ -3,6 +3,12 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import type { UploadAjaxError } from 'element-plus/es/components/upload/src/ajax'
 import type { Popup } from '~/components/types/popup'
+
+const emit = defineEmits([
+  'closeFilePopup',
+  'reload',
+])
+
 const popup: Popup = reactive({
   name: '',
   title: '파일 등록',
@@ -18,12 +24,18 @@ interface fileUploadResult {
   resultMessage: string
 }
 
+const close = () => {
+  emit('closeFilePopup')
+  emit('reload')
+}
+
 const uploadSuccess = (res: fileUploadResult) => {
-  ElMessageBox.alert(`${res.fileName}등록에 성공하였습니다.`)
+  ElMessageBox.alert('등록에 성공하였습니다.')
+  close()
 }
 const uploadFail = (res: UploadAjaxError) => {
   const result: fileUploadResult = JSON.parse(res.message)
-  ElMessageBox.alert(`${result.fileName}의 ${result.resultMessage}`)
+  ElMessageBox.alert('등록실패')
 }
 </script>
 
@@ -40,7 +52,7 @@ const uploadFail = (res: UploadAjaxError) => {
     <el-upload
       class="upload-demo"
       drag
-      action="http://localhost:3333/api/file"
+      action="http://localhost:3333/api/order/uploadExcel"
       multiple
       :on-success="uploadSuccess"
       :on-error="uploadFail"
