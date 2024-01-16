@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ElMessageBox } from 'element-plus'
+import { ArrowRight, Delete } from '@element-plus/icons-vue'
 import type { OrderingInfo, Organization, Product } from '~/order/types'
 
 const router = useRouter()
@@ -192,17 +193,24 @@ onMounted(
               size="small"
               @click.prevent="deleteRow(scope.$index)"
             >
-              제거
+              <el-icon :size="20">
+                <Delete />
+              </el-icon>
             </el-button>
           </template>
         </el-table-column>
         <el-table-column fixed="left" width="30">
           <template #default="scope">
             <el-button
+              link
               type="primary"
               size="small"
               @click.prevent="copyCell(scope.$index)"
-            />
+            >
+              <el-icon :size="20">
+                <ArrowRight />
+              </el-icon>
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
