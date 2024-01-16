@@ -52,7 +52,7 @@ const uploadFail = (res: UploadAjaxError) => {
     <el-upload
       class="upload-demo"
       drag
-      action="http://localhost:3333/api/order/uploadExcel"
+      action="/api/order/uploadExcel"
       multiple
       :on-success="uploadSuccess"
       :on-error="uploadFail"
