@@ -2,7 +2,7 @@
 const router = useRouter()
 
 const movePage = () => {
-  router.push('/page/fileUpload')
+  router.push('/main')
 }
 </script>
 

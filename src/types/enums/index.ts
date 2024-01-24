@@ -1,0 +1,10 @@
+export enum RESPONSE {
+  SUCCESS = '20000000',
+  FAIL = '500',
+  VACATION_LESS = '20000005',
+  UNAUTH = '20000004',
+  NOTASSIGNED = '20000003',
+  LOGIN_FAIL = '40100001', // 로그인 실패 에러
+  LOGIN_UNAUTHORIZED = '40300001', // 로그인 권한 없음 에러
+  LOGIN_SESSION_EXPIRATION = '40100002', // 로그인 세션만료 에러
+}

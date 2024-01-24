@@ -1,3 +1,6 @@
+import { useEventBus } from '@vueuse/core'
+import { gssEventBusKey } from '~/types'
+
 export interface IReqOptions {
   method: string
   meta?: object
@@ -7,7 +10,6 @@ export interface IReqOptions {
 }
 
 export const prefixUrl = '/api'
-
 export const request = async (url: string, options: IReqOptions) => {
   const { method, headers, data, params } = options
   const reqObj: RequestInit = {
@@ -29,5 +31,15 @@ export const request = async (url: string, options: IReqOptions) => {
   }
 
   const response = await fetch(url, reqObj)
-  return response.json()
+  try {
+    if (!response.ok)
+      throw response.clone()
+    return response.json()
+  }
+  catch (errorRes: any) {
+    console.log(errorRes.status)
+    // const errorJsonData = await errorRes.json()
+    const bus = useEventBus(gssEventBusKey)
+    bus.emit()
+  }
 }

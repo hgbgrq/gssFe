@@ -93,6 +93,13 @@ const Ordering = async () => {
   enrollOrderData.orderOrderingDate = convertDate(orderDate.value)
   enrollOrderData.orderDeadLineDate = convertDate(deadLineDate.value)
 
+  for (const p of enrollOrderData.productList) {
+    if (p.productColor || p.productStyleNo || p.productItem || p.productSize) {
+      ElMessageBox.alert('상품 정보를 완벽히 기입해주세요')
+      return
+    }
+  }
+
   const orderId = ref()
   const data = {
     ...enrollOrderData,
@@ -115,6 +122,7 @@ const Ordering = async () => {
   router.push('/page/order')
   loading.value = false
 }
+
 onMounted(
   async () => {
     await getOrganizationList()
