@@ -9,7 +9,6 @@ const router = useRouter()
 
 const bus = useEventBus(gssEventBusKey)
 const notEvent = (errorResponse: IResponse) => {
-  console.log('qwe')
   // if (errorResponse.code === RESPONSE.LOGIN_UNAUTHORIZED) {
   //   ElMessage({
   //     type: 'error',

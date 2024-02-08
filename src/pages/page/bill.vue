@@ -155,12 +155,13 @@ const getYearCommonCode = async () => {
 }
 
 const modifyPrice = async () => {
-  const data = {
-    stacProductReqList: stacInfoList.value,
-  }
-
   try {
-    const res = await request('/stac', { method: 'POST', data })
+    const res = await request('/stac', {
+      method: 'POST',
+      data: {
+        stacProductReqList: stacInfoList.value,
+      },
+    })
     console.log(res)
     if (res.code === '200')
       getStacList()
@@ -348,7 +349,11 @@ onMounted(
                 <el-input v-model="stacinfo.stacProductList[scope.$index].productPrice" :disabled="inputMode" />
               </template>
             </el-table-column>
-            <el-table-column prop="totalPrdPrc" label="총액" />
+            <el-table-column prop="totalPrdPrc" label="총액">
+              <template #default="scope">
+                <el-input v-model="stacinfo.stacProductList[scope.$index].totalPrdPrc" :disabled="inputMode" />
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
@@ -403,7 +408,8 @@ onMounted(
   margin-bottom: 10px;
 }
 .stac-label {
-  margin-bottom : 10px
+  margin-bottom : 10px;
+  font-size: 28px;
 }
 .stac-box {
   display: flex;

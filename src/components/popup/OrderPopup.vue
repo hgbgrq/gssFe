@@ -96,6 +96,18 @@ const getOrganizationList = async () => {
   }
 }
 
+const onAddItem = () => {
+  orderInfo.productList.push({
+    productId: '',
+    productStyleNo: '',
+    productItem: '',
+    productSize: '',
+    productColor: '',
+    productQty: 0,
+    productEtc: '',
+  })
+}
+
 const handleSelect = (item: Organization) => {
   selectedOrg.value = JSON.parse(
     JSON.stringify(item.orgId),
@@ -164,6 +176,9 @@ onMounted(async () => {
       </div>
 
       <div>
+        <el-button class="mt-4" style="width: 50%" @click="onAddItem">
+          추가
+        </el-button>
         <el-table :data="orderInfo.productList" style="width: 100%">
           <el-table-column label="StyleNo" width="150">
             <template #default="scope">
