@@ -177,7 +177,7 @@ onMounted(async () => {
 
       <div>
         <el-button class="mt-4" style="width: 50%" @click="onAddItem">
-          추가
+          추 가
         </el-button>
         <el-table :data="orderInfo.productList" style="width: 100%">
           <el-table-column label="StyleNo" width="150">
