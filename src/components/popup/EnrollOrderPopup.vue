@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import type { Popup } from '~/components/types/popup'
-import type { Organization } from '~/order/types'
+import type { OrderingInfo, Organization } from '~/order/types'
 
 const props = defineProps<{
-  orderId: string
+  orgId: string
+  orgName: string
 }>()
 
 const emit = defineEmits([
@@ -12,6 +13,10 @@ const emit = defineEmits([
   'reload',
 ])
 
+const close = () => {
+  emit('close')
+  emit('reload')
+}
 interface Product {
   productId: string
   productStyleNo: string
@@ -24,40 +29,27 @@ interface Product {
   totalPrdPrc: number
 }
 
-interface OrderDetail {
-  orderOrderingDate: string
-  orderDeadLineDate: string
-  orgId: string
-  orgName: string
-  orderId: string
-  productList: Product[]
-}
-
 const popup: Popup = reactive({
   name: '',
   title: '',
   show: true,
   width: '1300px',
-  button: '수정',
+  button: '등록',
 })
 
-const orderInfo = reactive<OrderDetail>({
-  orderId: '',
-  orderOrderingDate: '',
-  orderDeadLineDate: '',
-  orgId: '',
-  orgName: '',
-  productList: [],
-})
-
-const org = ref('')
-const organizations = ref<Organization[]>([])
+const popupOrgName = ref('')
 const selectedOrg = ref('')
+const orderDate = ref()
+const deadLineDate = ref()
+const enrollProduct = ref<Product[]>([])
+const organizations = ref<Organization[]>([])
 
-const close = () => {
-  emit('close')
-  emit('reload')
-}
+const enrollOrderData = reactive<OrderingInfo>({
+  orgId: selectedOrg.value,
+  orderOrderingDate: orderDate.value,
+  orderDeadLineDate: deadLineDate.value,
+  productList: enrollProduct.value,
+})
 
 const createFilter = (queryString: string) => {
   return (organization: Organization) => {
@@ -67,6 +59,12 @@ const createFilter = (queryString: string) => {
   }
 }
 
+const handleSelect = (item: Organization) => {
+  selectedOrg.value = JSON.parse(
+    JSON.stringify(item.orgId),
+  )
+}
+
 const querySearch = (queryString: string, cb: any) => {
   const results = queryString
     ? organizations.value.filter(createFilter(queryString))
@@ -74,20 +72,6 @@ const querySearch = (queryString: string, cb: any) => {
   cb(results)
 }
 
-const getDetailOrder = async () => {
-  try {
-    const res = await request(`/order/${props.orderId}`, { method: 'GET' })
-    orderInfo.orderOrderingDate = res.orderOrderingDate
-    orderInfo.orderDeadLineDate = res.orderDeadLineDate
-    orderInfo.orderId = res.orderId
-    orderInfo.orgId = res.orgId
-    orderInfo.orgName = res.orgName
-    orderInfo.productList = res.productList
-  }
-  catch (error) {
-    console.log(error)
-  }
-}
 const getOrganizationList = async () => {
   try {
     const res = await request('/org', { method: 'GET' })
@@ -98,8 +82,35 @@ const getOrganizationList = async () => {
   }
 }
 
+const popupButton = async () => {
+  const data = {
+    ...enrollOrderData,
+  }
+
+  try {
+    data.orderOrderingDate = dayjs(enrollOrderData.orderOrderingDate).format('YYYY-MM-DD')
+    data.orderDeadLineDate = dayjs(enrollOrderData.orderDeadLineDate).format('YYYY-MM-DD')
+    data.orgId = selectedOrg.value
+    await request('/order', { method: 'POST', data })
+    close()
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const convertDate = (date: Date) => {
+  const yyyy = date.getFullYear().toString()
+  const mm = (date.getMonth() + 1).toString()
+  const dd = date.getDate().toString()
+
+  let converDate = ''
+  converDate += `${yyyy}-${mm[1] ? mm : `0${mm[0]}`}-${dd[1] ? dd : `0${dd[0]}`}`
+
+  return converDate
+}
 const onAddItem = () => {
-  orderInfo.productList.push({
+  enrollProduct.value.push({
     productId: '',
     productStyleNo: '',
     productItem: '',
@@ -112,35 +123,13 @@ const onAddItem = () => {
   })
 }
 
-const handleSelect = (item: Organization) => {
-  selectedOrg.value = JSON.parse(
-    JSON.stringify(item.orgId),
-  )
-}
-
-const popupButton = async () => {
-  const data = {
-    ...orderInfo,
-  }
-
-  try {
-    data.orderOrderingDate = dayjs(orderInfo.orderOrderingDate).format('YYYY-MM-DD')
-    data.orderDeadLineDate = dayjs(orderInfo.orderDeadLineDate).format('YYYY-MM-DD')
-    const res = await request('/order/modify', { method: 'POST', data })
-    if (res.code === '200')
-      close()
-  }
-  catch (error) {
-    console.log(error)
-  }
-}
-
-onMounted(async () => {
-  popup.title = '발주서'
-  popup.button = '수정'
-  await getOrganizationList()
-  await getDetailOrder()
-})
+onMounted(
+  async () => {
+    await getOrganizationList()
+    popupOrgName.value = props.orgName
+    selectedOrg.value = props.orgId
+  },
+)
 </script>
 
 <template>
@@ -159,7 +148,7 @@ onMounted(async () => {
           <span class="serach-label"> 회사 </span>
           <div>
             <el-autocomplete
-              v-model="orderInfo.orgName"
+              v-model="popupOrgName"
               value-key="orgName"
               :fetch-suggestions="querySearch"
               clearable
@@ -171,11 +160,11 @@ onMounted(async () => {
         </div>
         <div class="search-form">
           <span class="serach-label"> 발주일 </span>
-          <el-date-picker v-model="orderInfo.orderOrderingDate" type="date" />
+          <el-date-picker v-model="orderDate" type="date" />
         </div>
         <div class="search-form">
           <span class="serach-label"> 납기일 </span>
-          <el-date-picker v-model="orderInfo.orderDeadLineDate" type="date" />
+          <el-date-picker v-model="deadLineDate" type="date" />
         </div>
       </div>
 
@@ -183,45 +172,45 @@ onMounted(async () => {
         <el-button class="mt-4" style="width: 50%" @click="onAddItem">
           추 가
         </el-button>
-        <el-table :data="orderInfo.productList" style="width: 100%">
+        <el-table :data="enrollProduct" style="width: 100%">
           <el-table-column label="StyleNo" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productStyleNo" />
+              <el-input v-model="enrollProduct[scope.$index].productStyleNo" />
             </template>
           </el-table-column>
           <el-table-column label="Item" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productItem" />
+              <el-input v-model="enrollProduct[scope.$index].productItem" />
             </template>
           </el-table-column>
           <el-table-column label="Size" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productSize" />
+              <el-input v-model="enrollProduct[scope.$index].productSize" />
             </template>
           </el-table-column>
           <el-table-column label="Color" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productColor" />
+              <el-input v-model="enrollProduct[scope.$index].productColor" />
             </template>
           </el-table-column>
           <el-table-column label="Qty" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productQty" type="number" />
+              <el-input v-model="enrollProduct[scope.$index].productQty" type="number" />
             </template>
           </el-table-column>
           <el-table-column label="Etc" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productEtc" />
+              <el-input v-model="enrollProduct[scope.$index].productEtc" />
             </template>
           </el-table-column>
           <el-table-column label="개별 단가" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].productPrice" />
+              <el-input v-model="enrollProduct[scope.$index].productPrice" />
             </template>
           </el-table-column>
           <el-table-column label="총액" width="150">
             <template #default="scope">
-              <el-input v-model="orderInfo.productList[scope.$index].totalPrdPrc" />
+              <el-input v-model="enrollProduct[scope.$index].totalPrdPrc" />
             </template>
           </el-table-column>
         </el-table>
@@ -241,27 +230,27 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-  .popup{
-    height: 100%;
-    overflow-y: auto;
-    padding: 0 40px!important;
-  }
-  .search-box {
-    padding: 10px;
-    background: #ffffff;
-    border: 1px solid #c1c2c3;
-    border-radius: 10px;
-    margin-bottom: 60px;
-  }
+.popup{
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 40px!important;
+}
+.search-box {
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #c1c2c3;
+  border-radius: 10px;
+  margin-bottom: 60px;
+}
 
-  .search-form {
-    width: 70%;
-    position: relative;
-    justify-content: start;
-    margin-bottom: 30px;
-  }
+.search-form {
+  width: 70%;
+  position: relative;
+  justify-content: start;
+  margin-bottom: 30px;
+}
 
-  .serach-label {
-    margin-right: 5px;
-  }
+.serach-label {
+  margin-right: 5px;
+}
 </style>

@@ -27,6 +27,7 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    PopupEnrollOrderPopup: typeof import('./components/popup/EnrollOrderPopup.vue')['default']
     PopupFileUploadPopup: typeof import('./components/popup/FileUploadPopup.vue')['default']
     PopupOrderPopup: typeof import('./components/popup/OrderPopup.vue')['default']
     PopupOrgPopup: typeof import('./components/popup/OrgPopup.vue')['default']

@@ -3,6 +3,9 @@ import type { TableColumnCtx } from 'element-plus'
 import { ElMessageBox } from 'element-plus'
 import type { Organization } from '~/order/types'
 import 'swiper/css'
+import { Edit } from '@element-plus/icons-vue'
+import OrderPopup from '~/components/popup/OrderPopup.vue'
+import EnrollOrderPopup from '~/components/popup/EnrollOrderPopup.vue'
 
 interface ISeachForm {
   orgId: string
@@ -22,6 +25,7 @@ interface IProduct {
   productEtc: string
   orderOrderingDate: string
   totalPrdPrc: number
+  taxPrice: number
 }
 interface IOrganizationInfo {
   orgId: string
@@ -54,10 +58,6 @@ const endMonth = ref('')
 const year = ref('')
 const state = ref('')
 const loading = ref(false)
-const inputMode = ref(true)
-const modeNmae = ref('단가 입력')
-const modeType = ref('info')
-const totalCount = ref(0)
 const organizations = ref<Organization[]>([])
 const monthCommonCodes = ref<IcommonCode[]>([])
 const yearCommonCodes = ref<IcommonCode[]>([])
@@ -195,21 +195,6 @@ const yearHandleSelect = (item: IcommonCode) => {
   )
 }
 
-const handleSelectionChange = (val: IProduct[]) => {
-  checkedList.value = val
-}
-
-const changeMode = () => {
-  if (inputMode.value) {
-    inputMode.value = false
-    modeType.value = 'primary'
-  }
-  else {
-    modifyPrice()
-    inputMode.value = true
-    modeType.value = 'info'
-  }
-}
 interface SummaryMethodProps<T = IProduct> {
   columns: TableColumnCtx<T>[]
   data: T[]
@@ -222,7 +207,7 @@ const getSummaries = (param: SummaryMethodProps) => {
       sums[index] = '총액'
       return
     }
-    if (column.property === 'totalPrdPrc') {
+    if (column.property === 'taxPrice') {
       const values = data.map(item => Number(item[column.property]))
       const cost = values.reduce((prev, curr) => {
         const value = Number(curr)
@@ -239,6 +224,37 @@ const getSummaries = (param: SummaryMethodProps) => {
     }
   })
   return sums
+}
+
+const popup: OrderPopup = reactive({
+  show: false,
+  orderId: '',
+})
+
+const enrollPopup: OrderPopup = reactive({
+  show: false,
+  orgId: '',
+  orgName: '',
+})
+
+const editOrder = (orderId: string) => {
+  popup.orderId = orderId
+  popup.show = true
+}
+
+const enrollOrder = () => {
+  enrollPopup.orgId = state.value
+  enrollPopup.orgName = searchForm.orgId
+  enrollPopup.show = true
+}
+
+const closePopup = () => {
+  popup.show = false
+  enrollPopup.show = false
+}
+
+const reload = () => {
+  getStacList()
 }
 
 onMounted(
@@ -321,8 +337,8 @@ onMounted(
 
   <div>
     <div class="table-button">
-      <el-button :type="modeType" @click="changeMode">
-        {{ modeNmae }}
+      <el-button @click="enrollOrder">
+        등록
       </el-button>
     </div>
     <div class="stac-box">
@@ -339,25 +355,41 @@ onMounted(
             <el-table-column prop="productSize" label="size" />
             <el-table-column prop="productColor" label="color" />
             <el-table-column prop="productQty" label="qty" />
-            <el-table-column label="비고">
+            <el-table-column prop="productEtc" label="비고" />
+            <el-table-column prop="productPrice" label="개별 단가" />
+            <el-table-column prop="totalPrdPrc" label="총액" />
+            <el-table-column prop="taxPrice" label="세금 합계" width="120" />
+            <el-table-column label="" width="50">
               <template #default="scope">
-                <el-input v-model="stacinfo.stacProductList[scope.$index].productEtc" :disabled="inputMode" />
-              </template>
-            </el-table-column>
-            <el-table-column label="개별 단가">
-              <template #default="scope">
-                <el-input v-model="stacinfo.stacProductList[scope.$index].productPrice" :disabled="inputMode" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="totalPrdPrc" label="총액">
-              <template #default="scope">
-                <el-input v-model="stacinfo.stacProductList[scope.$index].totalPrdPrc" :disabled="inputMode" />
+                <el-button
+                  link
+                  type="primary"
+                  size="small"
+                  @click.prevent="editOrder(stacinfo.stacProductList[scope.$index].orderId)"
+                >
+                  <el-icon :size="20">
+                    <Edit />
+                  </el-icon>
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
       </div>
     </div>
+    <OrderPopup
+      v-if="popup.show"
+      :order-id="popup.orderId"
+      @close="closePopup"
+      @reload="reload"
+    />
+    <EnrollOrderPopup
+      v-if="enrollPopup.show"
+      :org-name="state"
+      :org-id="searchForm.orgId"
+      @close="closePopup"
+      @reload="reload"
+    />
   </div>
 </template>
 
